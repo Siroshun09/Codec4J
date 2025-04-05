@@ -1,0 +1,34 @@
+[versions]
+# libraries
+annotations = "26.0.1"
+gson = "2.11.0"
+jfun = "1.0.0-beta.2"
+snakeyaml = "2.3"
+
+# testing tool
+junit = "5.12.1"
+
+# plugins
+gradle-plugins = "1.0.0"
+
+[libraries]
+
+# libraries
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+jfun-function = { module = "dev.siroshun.jfun:jfun-function", version.ref = "jfun" }
+jfun-result = { module = "dev.siroshun.jfun:jfun-result", version.ref = "jfun" }
+jfun-result-assertion = { module = "dev.siroshun.jfun:jfun-result-assertion", version.ref = "jfun" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+
+# testing tool
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+
+[plugins]
+
+jcommon = { id = "dev.siroshun.gradle.plugins.jcommon", version.ref = "gradle-plugins" }
+aggregated-javadoc = { id = "dev.siroshun.gradle.plugins.aggregated-javadoc", version.ref = "gradle-plugins" }
+aggregated-javadoc-collector = { id = "dev.siroshun.gradle.plugins.aggregated-javadoc-collector", version.ref = "gradle-plugins" }
+mavenCentralPortal = { id = "dev.siroshun.gradle.plugins.maven-central-portal", version.ref = "gradle-plugins" }
+mavenPublication = { id = "dev.siroshun.gradle.plugins.maven-publication", version.ref = "gradle-plugins" }
