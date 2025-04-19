@@ -1,5 +1,7 @@
 name: Java CI (Gradle)
 on: [ push, pull_request ]
+permissions:
+  checks: write
 
 jobs:
   build-java-21:
