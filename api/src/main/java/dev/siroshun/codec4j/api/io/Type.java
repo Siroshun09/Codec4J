@@ -1,5 +1,7 @@
 package dev.siroshun.codec4j.api.io;
 
+import java.util.stream.Stream;
+
 /**
  * An interface providing basic types that are supported by Codec4J.
  */
@@ -64,6 +66,42 @@ public sealed interface Type permits Type.ListType, Type.MapType, Type.Unknown, 
      * An unknown {@link Type}.
      */
     Unknown UNKNOWN = new Unknown();
+
+    /**
+     * Gets a {@link Stream} of all {@link Type}s.
+     *
+     * @return a {@link Stream} of all {@link Type}s
+     */
+    static Stream<Type> types() {
+        return Stream.of(BOOLEAN, BYTE, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING, LIST, MAP, UNKNOWN);
+    }
+
+    /**
+     * Gets a {@link Stream} of all known {@link Type}s.
+     *
+     * @return a {@link Stream} of all known {@link Type}s, excluding {@link Unknown} type
+     */
+    static Stream<Type> knownTypes() {
+        return Stream.of(BOOLEAN, BYTE, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING, LIST, MAP);
+    }
+
+    /**
+     * Gets a {@link Stream} of all {@link Type.Value}s.
+     *
+     * @return a {@link Stream} of all {@link Type.Value}s
+     */
+    static Stream<Type.Value<?>> valueTypes() {
+        return Stream.of(BOOLEAN, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING);
+    }
+
+    /**
+     * Gets a {@link Stream} of all {@link Type.NumberValue}s.
+     *
+     * @return a {@link Stream} of all {@link Type.NumberValue}s
+     */
+    static Stream<Type.NumberValue<?>> numberTypes() {
+        return Stream.of(BYTE, DOUBLE, FLOAT, INT, LONG, SHORT);
+    }
 
     /**
      * Whether this {@link Type} is a {@link BooleanValue} type.
