@@ -4,10 +4,7 @@ import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 
-
-import java.util.OptionalInt;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * An interface for reading and decoding data from various sources.
@@ -89,22 +86,22 @@ public interface In {
     @NotNull Result<String, DecodeError> readAsString();
 
     /**
-     * Reads the current value as a list, using the provided identity factory and operator.
+     * Reads the current value as a list, using the provided identity object and operator.
      *
-     * @param <R>             the type of the result container
-     * @param identityFactory a function that creates an initial container for the list elements, possibly using the list size hint
-     * @param operator        a function that processes each element in the list using the provided {@link In} interface
+     * @param <R>      the type of the result container
+     * @param identity an object that is used while processing the list elements, and will be returned as the result
+     * @param operator a function that processes each element in the list using the provided {@link In} interface
      * @return a result containing the constructed container, or a {@link DecodeError} if the operation failed
      */
-    <R> @NotNull Result<R, DecodeError> readList(@NotNull Function<OptionalInt, R> identityFactory, @NotNull BiFunction<R, ? super In, Result<Void, ?>> operator);
+    <R> @NotNull Result<R, DecodeError> readList(@NotNull R identity, @NotNull BiFunction<R, ? super In, Result<Void, ?>> operator);
 
     /**
-     * Reads the current value as a map, using the provided identity factory and operator.
+     * Reads the current value as a map, using the provided identity object and operator.
      *
-     * @param <R>             the type of the result container
-     * @param identityFactory a function that creates an initial container for the map entries, possibly using the map size hint
-     * @param operator        a function that processes each entry in the map using the provided {@link EntryIn} interface
+     * @param <R>      the type of the result container
+     * @param identity an object that is used while processing the map entries, and will be returned as the result
+     * @param operator a function that processes each entry in the map using the provided {@link EntryIn} interface
      * @return a result containing the constructed container, or a {@link DecodeError} if the operation failed
      */
-    <R> @NotNull Result<R, DecodeError> readMap(@NotNull Function<OptionalInt, R> identityFactory, @NotNull BiFunction<R, ? super EntryIn, Result<Void, ?>> operator);
+    <R> @NotNull Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<Void, ?>> operator);
 }
