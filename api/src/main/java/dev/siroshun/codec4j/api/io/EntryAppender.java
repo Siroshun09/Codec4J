@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 /**
  * An interface for writing key-value to an {@link Out}.
+ *
  * @param <O> the type of the output destination
  */
 public interface EntryAppender<O> {
@@ -15,7 +16,7 @@ public interface EntryAppender<O> {
     /**
      * Appends a key-value pair to the output destination.
      *
-     * @param keyWriter  the function to write the key
+     * @param keyWriter   the function to write the key
      * @param valueWriter the function to write the value
      * @return a result containing {@code null} if the operation succeeded, or a {@link EncodeError} if the operation failed
      */

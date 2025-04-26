@@ -1,7 +1,7 @@
 package dev.siroshun.codec4j.api.codec;
 
-import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.codec4j.api.error.EncodeError;
+import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;

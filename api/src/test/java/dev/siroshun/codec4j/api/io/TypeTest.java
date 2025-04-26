@@ -10,24 +10,24 @@ class TypeTest {
     @Test
     void knownTypes() {
         Assertions.assertEquals(
-                Type.types().stream().filter(type -> type != Type.UNKNOWN).toList(),
-                Type.knownTypes()
+            Type.types().stream().filter(type -> type != Type.UNKNOWN).toList(),
+            Type.knownTypes()
         );
     }
 
     @Test
     void valueTypes() {
         Assertions.assertEquals(
-                Type.types().stream().filter(type -> type instanceof Type.Value<?>).toList(),
-                Type.valueTypes()
+            Type.types().stream().filter(type -> type instanceof Type.Value<?>).toList(),
+            Type.valueTypes()
         );
     }
 
     @Test
     void numberTypes() {
         Assertions.assertEquals(
-                Type.types().stream().filter(type -> type instanceof Type.NumberValue<?>).toList(),
-                Type.numberTypes()
+            Type.types().stream().filter(type -> type instanceof Type.NumberValue<?>).toList(),
+            Type.numberTypes()
         );
     }
 

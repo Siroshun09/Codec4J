@@ -13,7 +13,8 @@ final class DecodeErrors {
     record InvalidCharError(String actualValue) implements DecodeError.InvalidChar {
     }
 
-    record InvalidNumberError(Type.NumberValue<?> expectedType, Number actualValue) implements DecodeError.InvalidNumber {
+    record InvalidNumberError(Type.NumberValue<?> expectedType,
+                              Number actualValue) implements DecodeError.InvalidNumber {
     }
 
     record InvalidNumberFormatError(NumberFormatException exception) implements DecodeError.InvalidNumberFormat {

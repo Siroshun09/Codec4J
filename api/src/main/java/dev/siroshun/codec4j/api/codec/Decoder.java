@@ -1,7 +1,7 @@
 package dev.siroshun.codec4j.api.codec;
 
-import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.error.DecodeError;
+import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 
