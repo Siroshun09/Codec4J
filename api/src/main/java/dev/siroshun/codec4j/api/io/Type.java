@@ -94,7 +94,7 @@ public sealed interface Type permits Type.ListType, Type.MapType, Type.Unknown, 
      * @return a {@link List} of all {@link Type.Value}s
      */
     static List<Type.Value<?>> valueTypes() {
-        return List.of(BOOLEAN, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING);
+        return List.of(BOOLEAN, BYTE, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING);
     }
 
     /**
