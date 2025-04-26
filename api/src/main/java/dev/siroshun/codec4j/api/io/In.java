@@ -93,7 +93,7 @@ public interface In {
      * @param operator a function that processes each element in the list using the provided {@link In} interface
      * @return a result containing the constructed container, or a {@link DecodeError} if the operation failed
      */
-    <R> @NotNull Result<R, DecodeError> readList(@NotNull R identity, @NotNull BiFunction<R, ? super In, Result<Void, ?>> operator);
+    <R> @NotNull Result<R, DecodeError> readList(@NotNull R identity, @NotNull BiFunction<R, ? super In, Result<?, ?>> operator);
 
     /**
      * Reads the current value as a map, using the provided identity object and operator.
@@ -103,5 +103,5 @@ public interface In {
      * @param operator a function that processes each entry in the map using the provided {@link EntryIn} interface
      * @return a result containing the constructed container, or a {@link DecodeError} if the operation failed
      */
-    <R> @NotNull Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<Void, ?>> operator);
+    <R> @NotNull Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<?, ?>> operator);
 }

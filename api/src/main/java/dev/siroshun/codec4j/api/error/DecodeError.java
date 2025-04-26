@@ -63,7 +63,7 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
      * @param cause the {@link Result.Failure}
      * @return a new {@link DecodeError}
      */
-    static IterationError iterationError(Result.Failure<Void, ?> cause) {
+    static IterationError iterationError(Result.Failure<?, ?> cause) {
         Objects.requireNonNull(cause);
         return new DecodeErrors.IterationError(cause);
     }
@@ -171,7 +171,7 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
          *
          * @return a {@link Result.Failure} that is returned when iterating elements
          */
-        Result.Failure<Void, ?> cause();
+        Result.Failure<?, ?> cause();
     }
 
     /**

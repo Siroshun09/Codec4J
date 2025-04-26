@@ -19,7 +19,7 @@ final class DecodeErrors {
     record InvalidNumberFormatError(NumberFormatException exception) implements DecodeError.InvalidNumberFormat {
     }
 
-    record IterationError(Result.Failure<Void, ?> cause) implements DecodeError.IterationError {
+    record IterationError(Result.Failure<?, ?> cause) implements DecodeError.IterationError {
     }
 
     record FatalError(Throwable cause) implements DecodeError.FatalError {
