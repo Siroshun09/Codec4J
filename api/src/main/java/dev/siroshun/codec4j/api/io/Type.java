@@ -1,106 +1,109 @@
 package dev.siroshun.codec4j.api.io;
 
-import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNullByDefault;
+
+import java.util.List;
 
 /**
  * An interface providing basic types that are supported by Codec4J.
  */
+@NotNullByDefault
 public sealed interface Type permits Type.ListType, Type.MapType, Type.Unknown, Type.Value {
 
     /**
      * A {@link Type} for {@link Boolean}.
      */
-    BooleanValue BOOLEAN = new BooleanValue();
+    BooleanValue BOOLEAN = DefinedTypes.defineType(new BooleanValue());
 
     /**
      * A {@link Type} for {@link Byte}.
      */
-    ByteValue BYTE = new ByteValue();
+    ByteValue BYTE = DefinedTypes.defineType(new ByteValue());
 
     /**
      * A {@link Type} for {@link Character}.
      */
-    CharValue CHAR = new CharValue();
+    CharValue CHAR = DefinedTypes.defineType(new CharValue());
 
     /**
      * A {@link Type} for {@link Double}.
      */
-    DoubleValue DOUBLE = new DoubleValue();
+    DoubleValue DOUBLE = DefinedTypes.defineType(new DoubleValue());
 
     /**
      * A {@link Type} for {@link Float}.
      */
-    FloatValue FLOAT = new FloatValue();
+    FloatValue FLOAT = DefinedTypes.defineType(new FloatValue());
 
     /**
      * A {@link Type} for {@link Integer}.
      */
-    IntValue INT = new IntValue();
+    IntValue INT = DefinedTypes.defineType(new IntValue());
 
     /**
      * A {@link Type} for {@link Long}.
      */
-    LongValue LONG = new LongValue();
+    LongValue LONG = DefinedTypes.defineType(new LongValue());
 
     /**
      * A {@link Type} for {@link Short}.
      */
-    ShortValue SHORT = new ShortValue();
+    ShortValue SHORT = DefinedTypes.defineType(new ShortValue());
 
     /**
      * A {@link Type} for {@link String}.
      */
-    StringValue STRING = new StringValue();
+    StringValue STRING = DefinedTypes.defineType(new StringValue());
 
     /**
      * A {@link Type} for a list.
      */
-    ListType LIST = new ListType();
+    ListType LIST = DefinedTypes.defineType(new ListType());
 
     /**
      * A {@link Type} for a map.
      */
-    MapType MAP = new MapType();
+    MapType MAP = DefinedTypes.defineType(new MapType());
 
     /**
      * An unknown {@link Type}.
      */
-    Unknown UNKNOWN = new Unknown();
+    Unknown UNKNOWN = DefinedTypes.defineType(new Unknown());
 
     /**
-     * Gets a {@link Stream} of all {@link Type}s.
+     * Gets a {@link List} of all {@link Type}s.
      *
-     * @return a {@link Stream} of all {@link Type}s
+     * @return a {@link List} of all {@link Type}s
      */
-    static Stream<Type> types() {
-        return Stream.of(BOOLEAN, BYTE, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING, LIST, MAP, UNKNOWN);
+    static List<Type> types() {
+        return DefinedTypes.types();
     }
 
     /**
-     * Gets a {@link Stream} of all known {@link Type}s.
+     * Gets a {@link List} of all known {@link Type}s.
      *
-     * @return a {@link Stream} of all known {@link Type}s, excluding {@link Unknown} type
+     * @return a {@link List} of all known {@link Type}s, excluding {@link Unknown} type
      */
-    static Stream<Type> knownTypes() {
-        return Stream.of(BOOLEAN, BYTE, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING, LIST, MAP);
+    static List<Type> knownTypes() {
+        return List.of(BOOLEAN, BYTE, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING, LIST, MAP);
     }
 
     /**
-     * Gets a {@link Stream} of all {@link Type.Value}s.
+     * Gets a {@link List} of all {@link Type.Value}s.
      *
-     * @return a {@link Stream} of all {@link Type.Value}s
+     * @return a {@link List} of all {@link Type.Value}s
      */
-    static Stream<Type.Value<?>> valueTypes() {
-        return Stream.of(BOOLEAN, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING);
+    static List<Type.Value<?>> valueTypes() {
+        return List.of(BOOLEAN, CHAR, DOUBLE, FLOAT, INT, LONG, SHORT, STRING);
     }
 
     /**
-     * Gets a {@link Stream} of all {@link Type.NumberValue}s.
+     * Gets a {@link List} of all {@link Type.NumberValue}s.
      *
-     * @return a {@link Stream} of all {@link Type.NumberValue}s
+     * @return a {@link List} of all {@link Type.NumberValue}s
      */
-    static Stream<Type.NumberValue<?>> numberTypes() {
-        return Stream.of(BYTE, DOUBLE, FLOAT, INT, LONG, SHORT);
+    static List<Type.NumberValue<?>> numberTypes() {
+        return List.of(BYTE, DOUBLE, FLOAT, INT, LONG, SHORT);
     }
 
     /**
