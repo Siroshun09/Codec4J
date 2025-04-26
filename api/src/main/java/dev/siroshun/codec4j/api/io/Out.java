@@ -95,35 +95,10 @@ public interface Out<O> {
     @NotNull Result<ElementAppender<O>, EncodeError> createList();
 
     /**
-     * Creates a new list in the output destination with the specified element type.
-     *
-     * @param type the {@link Type} of elements in the list
-     * @return a result containing an {@link ElementAppender} for adding elements to the list,or an {@link EncodeError} if the operation failed
-     */
-    @NotNull Result<ElementAppender<O>, EncodeError> createList(@NotNull Type type);
-
-    /**
-     * Creates a new list in the output destination with the specified element type and size hint.
-     *
-     * @param type the {@link Type} of elements in the list
-     * @param size a hint for the expected number of elements in the list
-     * @return a result containing an {@link ElementAppender} for adding elements to the list,or an {@link EncodeError} if the operation failed
-     */
-    @NotNull Result<ElementAppender<O>, EncodeError> createList(@NotNull Type type, int size);
-
-    /**
      * Creates a new map in the output destination.
      *
      * @return a result containing an {@link EntryAppender} for adding key-value pairs to the map,or an {@link EncodeError} if the operation failed
      */
     @NotNull Result<EntryAppender<O>, EncodeError> createMap();
-
-    /**
-     * Creates a new map in the output destination with the specified size hint.
-     *
-     * @param size a hint for the expected number of entries in the map
-     * @return a result containing an {@link EntryAppender} for adding key-value pairs to the map,or an {@link EncodeError} if the operation failed
-     */
-    @NotNull Result<EntryAppender<O>, EncodeError> createMap(int size);
 
 }
