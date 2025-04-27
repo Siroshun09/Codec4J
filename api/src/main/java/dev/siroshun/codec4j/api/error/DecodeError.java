@@ -39,6 +39,8 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
     /**
      * Creates a {@link DecodeError} when the data is invalid number.
      *
+     * @param expectedType the expected {@link Type.NumberValue}
+     * @param actualValue  the actual {@link Number} value
      * @return a new {@link DecodeError}
      */
     static InvalidNumber invalidNumber(Type.NumberValue<?> expectedType, Number actualValue) {
@@ -50,6 +52,7 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
     /**
      * Creates a {@link DecodeError} when the data is an invalid number format.
      *
+     * @param e the caused {@link NumberFormatException}
      * @return a new {@link DecodeError}
      */
     static InvalidNumberFormat invalidNumberFormat(NumberFormatException e) {
@@ -71,6 +74,7 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
     /**
      * Creates a {@link DecodeError} when fatal error occurred while decoding.
      *
+     * @param cause the {@link Throwable} that caused the error
      * @return a new {@link DecodeError}
      */
     static FatalError fatalError(Throwable cause) {

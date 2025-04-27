@@ -195,6 +195,8 @@ public sealed interface Type permits Type.ListType, Type.MapType, Type.Unknown, 
 
     /**
      * A {@link Value} type for {@link Number}s.
+     *
+     * @param <T> the type of the number
      */
     sealed interface NumberValue<T> extends Value<T> {
     }

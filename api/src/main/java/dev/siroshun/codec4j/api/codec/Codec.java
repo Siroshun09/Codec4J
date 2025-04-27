@@ -20,6 +20,14 @@ import java.util.function.Function;
  */
 public interface Codec<T> extends Encoder<T>, Decoder<T> {
 
+    /**
+     * Creates a new {@link Codec} with the specified {@link Encoder} and {@link Decoder}.
+     *
+     * @param encoder the {@link Encoder} for encoding the data
+     * @param decoder the {@link Decoder} for decoding the data
+     * @param <A>     the type of the data
+     * @return a new {@link Codec} with the specified {@link Encoder} and {@link Decoder}
+     */
     @Contract(value = "_, _ -> new", pure = true)
     static <A> @NotNull Codec<A> codec(@NotNull Encoder<? super A> encoder, @NotNull Decoder<? extends A> decoder) {
         Objects.requireNonNull(encoder);
@@ -27,6 +35,15 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
         return new SimpleCodec<>(encoder, decoder);
     }
 
+    /**
+     * Creates a new {@link Codec} with the specified {@link Encoder}, {@link Decoder} and name.
+     *
+     * @param encoder the {@link Encoder} for encoding the data
+     * @param decoder the {@link Decoder} for decoding the data
+     * @param name    the name of the new {@link Codec}
+     * @param <A>     the type of the data
+     * @return a new {@link Codec} with the specified {@link Encoder}, {@link Decoder} and name
+     */
     @Contract(value = "_, _, _ -> new", pure = true)
     static <A> @NotNull Codec<A> codec(@NotNull Encoder<? super A> encoder, @NotNull Decoder<? extends A> decoder, @NotNull String name) {
         Objects.requireNonNull(name);
