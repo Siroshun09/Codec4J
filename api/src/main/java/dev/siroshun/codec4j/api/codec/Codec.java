@@ -8,7 +8,6 @@ import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -58,7 +57,9 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
      * @param <A>   the type of the mapped data
      * @return a new {@link Codec} that maps the data from the provided {@link T} to another type
      */
-    <A> @NotNull Codec<A> xmap(@NotNull Function<? super A, ? extends T> fromA, @NotNull Function<? super T, ? extends A> toA);
+    default <A> @NotNull Codec<A> xmap(@NotNull Function<? super A, ? extends T> fromA, @NotNull Function<? super T, ? extends A> toA) {
+        return codec(this.comap(fromA), this.map(toA));
+    }
 
     /**
      * Maps the data from the provided {@link T} to another type and flattens the {@link Result}.
@@ -68,7 +69,9 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
      * @param <A>   the type of the mapped data
      * @return a new {@link Codec} that maps the data from the provided {@link T} to another type and flattens the {@link Result}
      */
-    <A> @NotNull Codec<A> flatXmap(@NotNull Function<? super A, Result<T, EncodeError>> fromA, @NotNull Function<? super T, Result<A, DecodeError>> toA);
+    default <A> @NotNull Codec<A> flatXmap(@NotNull Function<? super A, Result<T, EncodeError>> fromA, @NotNull Function<? super T, Result<A, DecodeError>> toA) {
+        return codec(this.flatComap(fromA), this.flatMap(toA));
+    }
 
     /**
      * Creates a new {@link Codec} with the specified name and this {@link Codec} as the delegate codec.
@@ -76,7 +79,10 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
      * @param name the name of the new {@link Codec}
      * @return a named {@link Codec} with this {@link Codec} as the delegate codec
      */
-    @NotNull Codec<T> named(@NotNull String name);
+    default @NotNull Codec<T> named(@NotNull String name) {
+        Objects.requireNonNull(name);
+        return new NamedCodec<>(name, this);
+    }
 
     /**
      * A {@link Codec} for {@link Boolean}.
@@ -162,45 +168,5 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
             case Type.ShortValue ignored -> SHORT;
             case Type.StringValue ignored -> STRING;
         };
-    }
-
-    /**
-     * An interface for delegating {@link Codec}.
-     *
-     * @param <T> the type of the data
-     */
-    interface Delegated<T> extends Codec<T> {
-
-        /**
-         * Returns the delegated {@link Codec}.
-         *
-         * @return the delegated {@link Codec}
-         */
-        @NotNull Codec<T> codec();
-
-        @Override
-        default @NotNull <O> Result<O, EncodeError> encode(@NotNull Out<O> out, @UnknownNullability T input) {
-            return this.codec().encode(out, input);
-        }
-
-        @Override
-        default @NotNull Result<T, DecodeError> decode(@NotNull In in) {
-            return this.codec().decode(in);
-        }
-
-        @Override
-        default <A> @NotNull Codec<A> xmap(@NotNull Function<? super A, ? extends T> fromA, @NotNull Function<? super T, ? extends A> toA) {
-            return this.codec().xmap(fromA, toA);
-        }
-
-        @Override
-        default <A> @NotNull Codec<A> flatXmap(@NotNull Function<? super A, Result<T, EncodeError>> fromA, @NotNull Function<? super T, Result<A, DecodeError>> toA) {
-            return this.codec().flatXmap(fromA, toA);
-        }
-
-        @Override
-        default @NotNull Codec<T> named(@NotNull String name) {
-            return this.codec().named(name);
-        }
     }
 }

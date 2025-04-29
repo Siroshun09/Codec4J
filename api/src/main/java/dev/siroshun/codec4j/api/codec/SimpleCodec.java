@@ -8,7 +8,6 @@ import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 record SimpleCodec<T>(@NotNull Encoder<? super T> encoder, @NotNull Decoder<? extends T> decoder) implements Codec<T> {
@@ -23,19 +22,4 @@ record SimpleCodec<T>(@NotNull Encoder<? super T> encoder, @NotNull Decoder<? ex
         return this.decoder.decode(in).map(Function.identity());
     }
 
-    @Override
-    public <A> @NotNull Codec<A> xmap(@NotNull Function<? super A, ? extends T> fromA, @NotNull Function<? super T, ? extends A> toA) {
-        return new SimpleCodec<>(this.encoder.comap(fromA), this.decoder.map(toA));
-    }
-
-    @Override
-    public <A> @NotNull Codec<A> flatXmap(@NotNull Function<? super A, Result<T, EncodeError>> fromA, @NotNull Function<? super T, Result<A, DecodeError>> toA) {
-        return new SimpleCodec<>(this.encoder.flatComap(fromA), this.decoder.flatMap(toA));
-    }
-
-    @Override
-    public @NotNull Codec<T> named(@NotNull String name) {
-        Objects.requireNonNull(name);
-        return new NamedCodec<>(name, this);
-    }
 }
