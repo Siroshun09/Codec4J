@@ -93,12 +93,21 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
     }
 
     /**
-     * Makes this {@link DecodeError} ignorable
+     * Makes this {@link DecodeError} ignorable.
      *
      * @return {@link IgnorableError} with this {@link DecodeError}
      */
     default IgnorableError asIgnorable() {
         return new DecodeErrors.IgnorableError(this);
+    }
+
+    /**
+     * Returns whether this {@link DecodeError} can be ignored.
+     *
+     * @return {@code true} if this {@link DecodeError} can be ignored, otherwise {@code false}
+     */
+    default boolean isIgnorable() {
+        return this instanceof IgnorableError;
     }
 
     /**
