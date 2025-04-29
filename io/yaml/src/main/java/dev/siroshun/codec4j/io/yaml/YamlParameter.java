@@ -16,7 +16,6 @@
 
 package dev.siroshun.codec4j.io.yaml;
 
-
 import org.jetbrains.annotations.NotNullByDefault;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -26,20 +25,43 @@ import org.yaml.snakeyaml.representer.Representer;
 import static org.yaml.snakeyaml.DumperOptions.FlowStyle.BLOCK;
 import static org.yaml.snakeyaml.DumperOptions.FlowStyle.FLOW;
 
+/**
+ * A record for {@link Yaml} parameters.
+ *
+ * @param defaultFlowStyle  the default flow style for {@link DumperOptions} and {@link Representer}
+ * @param sequenceFlowStyle the flow style for sequences in {@link DumperOptions} and {@link Representer}
+ * @param mapFlowStyle      the flow style for maps in {@link DumperOptions} and {@link Representer}
+ * @param scalarStyle       the scalar style for {@link DumperOptions} and {@link Representer}
+ * @param indent            the indent for {@link DumperOptions}
+ */
 @NotNullByDefault
 public record YamlParameter(
-        DumperOptions.FlowStyle defaultFlowStyle,
-        DumperOptions.FlowStyle sequenceFlowStyle,
-        DumperOptions.FlowStyle mapFlowStyle,
-        DumperOptions.ScalarStyle scalarStyle,
-        int indent
+    DumperOptions.FlowStyle defaultFlowStyle,
+    DumperOptions.FlowStyle sequenceFlowStyle,
+    DumperOptions.FlowStyle mapFlowStyle,
+    DumperOptions.ScalarStyle scalarStyle,
+    int indent
 ) {
 
+    /**
+     * Returns the flow style for sequences in {@link DumperOptions} and {@link Representer}.
+     * <p>
+     * If the {@link #defaultFlowStyle} is NOT {@link DumperOptions.FlowStyle#BLOCK}, this method returns {@link DumperOptions.FlowStyle#FLOW}.
+     *
+     * @return the flow style for sequences in {@link DumperOptions} and {@link Representer}
+     */
     @Override
     public DumperOptions.FlowStyle sequenceFlowStyle() {
         return this.defaultFlowStyle == BLOCK ? this.sequenceFlowStyle : FLOW;
     }
 
+    /**
+     * Returns the flow style for maps in {@link DumperOptions} and {@link Representer}.
+     * <p>
+     * If the {@link #defaultFlowStyle} is NOT {@link DumperOptions.FlowStyle#BLOCK}, this method returns {@link DumperOptions.FlowStyle#FLOW}.
+     *
+     * @return the flow style for maps in {@link DumperOptions} and {@link Representer}
+     */
     @Override
     public DumperOptions.FlowStyle mapFlowStyle() {
         return this.defaultFlowStyle == BLOCK ? this.mapFlowStyle : FLOW;

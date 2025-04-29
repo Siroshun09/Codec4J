@@ -12,6 +12,9 @@ import org.jetbrains.annotations.NotNullByDefault;
 import java.io.IOException;
 import java.util.function.Function;
 
+/**
+ * An implementation of {@link Out} for {@link JsonWriter}.
+ */
 @NotNullByDefault
 public class JsonWriterOut implements Out<Void>, AutoCloseable {
 

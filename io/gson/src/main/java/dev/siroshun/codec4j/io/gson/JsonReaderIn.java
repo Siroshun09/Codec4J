@@ -13,6 +13,9 @@ import org.jetbrains.annotations.NotNullByDefault;
 import java.io.IOException;
 import java.util.function.BiFunction;
 
+/**
+ * An implementation of {@link In} that reads data from a {@link JsonReader}.
+ */
 @NotNullByDefault
 public class JsonReaderIn implements In, AutoCloseable {
 
