@@ -36,6 +36,7 @@ public final class CollectionCodec<E, C> implements Codec<C> {
      * @return a {@link CollectionCodec}
      */
     public static <E> @NotNull CollectionCodec<E, List<E>> list(@NotNull Codec<E> elementCodec) {
+        Objects.requireNonNull(elementCodec);
         return create(new Processor<>(
                 elementCodec,
                 ArrayList::new,
@@ -55,6 +56,7 @@ public final class CollectionCodec<E, C> implements Codec<C> {
      * @return a {@link CollectionCodec}
      */
     public static <E> @NotNull CollectionCodec<E, Set<E>> set(@NotNull Codec<E> elementCodec) {
+        Objects.requireNonNull(elementCodec);
         return create(new Processor<>(
                 elementCodec,
                 HashSet::new,
