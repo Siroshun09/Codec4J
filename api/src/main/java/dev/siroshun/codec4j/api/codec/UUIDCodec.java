@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.UUID;
 
+/**
+ * A {@link Codec} for {@link UUID}.
+ */
 @NotNullByDefault
 public final class UUIDCodec {
 
@@ -38,6 +41,11 @@ public final class UUIDCodec {
         }
     }
 
+    /**
+     * A {@link DecodeError.Failure} for {@link UUIDCodec#UUID_AS_STRING}.
+     *
+     * @param input the input string that is not a valid {@link UUID}
+     */
     public record InvalidUUIDFormatError(String input) implements DecodeError.Failure {
     }
 
