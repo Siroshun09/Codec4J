@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A {@link Decoder} for decoding elements from an {@link In#readList(Object, java.util.function.BiFunction)}.
  *
- * @param <E> the type of the decoded elements
- * @param <R> the type of the decoded data
+ * @param <E> the type of the element
+ * @param <R> the type of the result
  */
 public interface ElementDecoder<E, R> extends Decoder<R> {
 

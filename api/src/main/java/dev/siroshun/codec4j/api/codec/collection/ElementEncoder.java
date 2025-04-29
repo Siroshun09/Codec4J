@@ -14,8 +14,8 @@ import java.util.Objects;
 /**
  * An {@link Encoder} for encoding elements to an {@link Out}.
  *
- * @param <E> the type of the element to encode
- * @param <T> the type of the iterable to encode
+ * @param <E> the type of the element
+ * @param <T> the type of the source collection to encode
  */
 public interface ElementEncoder<E, T> extends Encoder<T> {
 
