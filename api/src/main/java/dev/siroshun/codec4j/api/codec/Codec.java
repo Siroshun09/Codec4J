@@ -1,5 +1,7 @@
 package dev.siroshun.codec4j.api.codec;
 
+import dev.siroshun.codec4j.api.codec.collection.CollectionCodec;
+import dev.siroshun.codec4j.api.codec.collection.MapCodec;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.In;
@@ -9,7 +11,10 @@ import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -82,6 +87,46 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
     default @NotNull Codec<T> named(@NotNull String name) {
         Objects.requireNonNull(name);
         return new NamedCodec<>(name, this);
+    }
+
+    /**
+     * Creates a new {@link Codec} for {@link List} of {@link T}.
+     *
+     * @return a new {@link Codec} for {@link List} of {@link T}
+     */
+    default @NotNull Codec<List<T>> toListCodec() {
+        return CollectionCodec.list(this);
+    }
+
+    /**
+     * Creates a new {@link Codec} for {@link Set} of {@link T}.
+     *
+     * @return a new {@link Codec} for {@link Set} of {@link T}
+     */
+    default @NotNull Codec<Set<T>> toSetCodec() {
+        return CollectionCodec.set(this);
+    }
+
+    /**
+     * Creates a new {@link Codec} for {@link Map} of {@link T} as a key.
+     *
+     * @param valueCodec the {@link Codec} for the value of the {@link Map}
+     * @param <V>        the type of the value of the {@link Map}
+     * @return a new {@link Codec} for {@link Map} of {@link T} as a key
+     */
+    default <V> @NotNull Codec<Map<T, V>> toMapCodecAsKey(@NotNull Codec<V> valueCodec) {
+        return MapCodec.map(this, valueCodec);
+    }
+
+    /**
+     * Creates a new {@link Codec} for {@link Map} of {@link T} as a value.
+     *
+     * @param keyCodec the {@link Codec} for the key of the {@link Map}
+     * @param <K>      the type of the key of the {@link Map}
+     * @return a new {@link Codec} for {@link Map} of {@link T} as a value
+     */
+    default <K> @NotNull Codec<Map<K, T>> toMapCodecAsValue(@NotNull Codec<K> keyCodec) {
+        return MapCodec.map(keyCodec, this);
     }
 
     /**
