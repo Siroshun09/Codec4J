@@ -33,7 +33,7 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
             E element = decodeResult.unwrap();
             Result<Void, DecodeError> acceptResult = this.processor().acceptElement(identity, element);
 
-            if (acceptResult.isFailure()) {
+            if (acceptResult.isFailure() && !acceptResult.unwrapError().isIgnorable()) {
                 return acceptResult.asFailure();
             }
 
