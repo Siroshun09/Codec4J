@@ -8,6 +8,7 @@ import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -16,17 +17,14 @@ import java.util.Objects;
  * @param <E> the type of the element to encode
  * @param <T> the type of the iterable to encode
  */
-public interface ElementEncoder<E, T extends Iterable<E>> extends Encoder<T> {
+public interface ElementEncoder<E, T> extends Encoder<T> {
 
     /**
-     * Encodes an element to the provided {@link Out}.
+     * Returns the {@link ElementProcessor} for extracting elements from {@link T} and decoding them.
      *
-     * @param out     the {@link Out} for writing the encoded element
-     * @param element the element to encode to the {@link Out}
-     * @param <O>     the type of the output destination
-     * @return a result containing {@code null} if the operation succeeded, or a {@link EncodeError} if the operation failed
+     * @return the {@link ElementProcessor}
      */
-    <O> @NotNull Result<O, EncodeError> encodeElement(@NotNull Out<O> out, @UnknownNullability E element);
+    @NotNull ElementProcessor<E, T> processor();
 
     @Override
     default <O> @NotNull Result<O, EncodeError> encode(@NotNull Out<O> out, @UnknownNullability T input) {
@@ -40,9 +38,11 @@ public interface ElementEncoder<E, T extends Iterable<E>> extends Encoder<T> {
         }
 
         ElementAppender<O> appender = appenderResult.unwrap();
+        Iterator<E> iterator = this.processor().toIterator(input);
 
-        for (E element : input) {
-            Result<O, EncodeError> elementResult = appender.append(elementOut -> this.encodeElement(elementOut, element));
+        while (iterator.hasNext()) {
+            E element = iterator.next();
+            Result<O, EncodeError> elementResult = appender.append(elementOut -> this.processor().encodeElement(elementOut, element));
 
             if (elementResult.isFailure()) {
                 return elementResult.asFailure();
