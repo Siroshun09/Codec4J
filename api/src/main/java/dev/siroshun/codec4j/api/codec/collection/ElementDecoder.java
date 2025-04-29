@@ -27,7 +27,7 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
             Result<E, DecodeError> decodeResult = this.processor().decodeElement(e);
 
             if (decodeResult.isFailure()) {
-                return decodeResult.unwrapError() instanceof DecodeError.IgnorableError ? Result.success() : decodeResult.asFailure();
+                return decodeResult.unwrapError().isIgnorable() ? Result.success() : decodeResult.asFailure();
             }
 
             E element = decodeResult.unwrap();
