@@ -33,14 +33,14 @@ final class FieldValue<F> {
             return result.asFailure();
         }
 
-        var fallbackValueResult = this.codec.fallbackValue();
+        var onNotDecoded = this.codec.onNotDecoded();
 
-        if (fallbackValueResult.isSuccess()) {
-            this.value = fallbackValueResult.unwrap();
+        if (onNotDecoded.isSuccess()) {
+            this.value = onNotDecoded.unwrap();
             return Result.success();
         }
 
-        return fallbackValueResult.asFailure();
+        return onNotDecoded.asFailure();
     }
 
     @NotNull Result<Void, DecodeError> checkDecoded() {
@@ -48,7 +48,7 @@ final class FieldValue<F> {
             return Result.success();
         }
 
-        Result<F, DecodeError> result = this.codec.fallbackValue();
+        Result<F, DecodeError> result = this.codec.onNotDecoded();
 
         if (result.isSuccess()) {
             this.value = result.unwrap();

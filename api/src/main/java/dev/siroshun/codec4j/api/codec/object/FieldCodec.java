@@ -6,75 +6,32 @@ import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.jfun.result.Result;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
+import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public interface FieldCodec<T, F> {
 
+    @Contract("_, _, _ -> new")
+    static <T, F> @NotNull FieldCodecBuilder<T, F> builder(@NotNull String fieldName, @NotNull Codec<F> codec, @NotNull Function<T, F> getter) {
+        Objects.requireNonNull(fieldName);
+        Objects.requireNonNull(codec);
+        Objects.requireNonNull(getter);
+        return new FieldCodecBuilder<>(fieldName, codec, getter);
+    }
+
     @NotNull String fieldName();
 
-    @NotNull Codec<F> codec();
+    <O> @NotNull Result<O, EncodeError> encodeFieldValue(@NotNull Out<O> out, @UnknownNullability T input);
 
-    @UnknownNullability
-    F getFieldValue(@UnknownNullability T object);
+    boolean canOmit(@UnknownNullability T input);
 
-    @NotNull Result<F, DecodeError> fallbackValue();
+    @NotNull Result<F, DecodeError> decodeFieldValue(@NotNull In in);
 
-    default @NotNull Result<F, DecodeError> decodeFieldValue(@NotNull In in) {
-        return this.codec().decode(in);
-    }
-
-    default <O> @NotNull Result<O, EncodeError> encodeFieldValue(@NotNull Out<O> out, @UnknownNullability T input) {
-        return this.codec().encode(out, this.getFieldValue(input));
-    }
-
-    record Required<T, F>(String fieldName, Codec<F> codec, Function<T, F> getter) implements FieldCodec<T, F> {
-
-        @Override
-        public @UnknownNullability F getFieldValue(@UnknownNullability T object) {
-            return this.getter.apply(object);
-        }
-
-        @Override
-        public @NotNull Result<F, DecodeError> fallbackValue() {
-            return new RequiredFieldError(this.fieldName).asFailure();
-        }
-
-    }
-
-    record DefaultValue<T, F>(String fieldName, Codec<F> codec, Function<T, F> getter,
-                              @Nullable F defaultValue) implements FieldCodec<T, F> {
-
-        @Override
-        public @UnknownNullability F getFieldValue(@UnknownNullability T object) {
-            return this.getter.apply(object);
-        }
-
-        @Override
-        public Result.@NotNull Success<F, DecodeError> fallbackValue() {
-            return Result.success(this.defaultValue);
-        }
-
-    }
-
-    record DefaultValueSupplier<T, F>(String fieldName, Codec<F> codec, Function<T, F> getter,
-                                      Supplier<? extends F> supplier) implements FieldCodec<T, F> {
-
-        @Override
-        public @UnknownNullability F getFieldValue(@UnknownNullability T object) {
-            return this.getter.apply(object);
-        }
-
-        @Override
-        public Result.@NotNull Success<F, DecodeError> fallbackValue() {
-            return Result.success(this.supplier.get());
-        }
-
-    }
+    @NotNull Result<F, DecodeError> onNotDecoded();
 
     record RequiredFieldError(String fieldName) implements DecodeError.Failure {
     }

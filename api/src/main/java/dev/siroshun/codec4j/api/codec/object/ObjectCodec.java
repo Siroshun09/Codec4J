@@ -99,6 +99,9 @@ public final class ObjectCodec<T> implements Codec<T> {
         var appender = result.unwrap();
 
         for (var field : this.fieldList) {
+            if (field.canOmit(input)) {
+                continue;
+            }
             var encodeResult = appender.append(keyOut -> keyOut.writeString(field.fieldName()), valueOut -> field.encodeFieldValue(valueOut, input));
             if (encodeResult.isFailure()) {
                 return result.asFailure();

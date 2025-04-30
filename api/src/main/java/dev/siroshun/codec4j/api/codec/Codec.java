@@ -3,6 +3,7 @@ package dev.siroshun.codec4j.api.codec;
 import dev.siroshun.codec4j.api.codec.collection.CollectionCodec;
 import dev.siroshun.codec4j.api.codec.collection.MapCodec;
 import dev.siroshun.codec4j.api.codec.object.FieldCodec;
+import dev.siroshun.codec4j.api.codec.object.FieldCodecBuilder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.In;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * An interface for encoding and decoding data.
@@ -132,53 +132,15 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
     }
 
     /**
-     * Creates a new {@link FieldCodec} for {@link T}, as a required field.
+     * Creates a new {@link FieldCodecBuilder} for {@link T}, as a field of an object {@link O}.
      *
-     * @param name   the name of the field
-     * @param getter the {@link Function} to get the value of the field from the provided {@link O}
-     * @param <O>    the type of the object
+     * @param fieldName the name of the field
+     * @param getter    the {@link Function} to get the value of the field from the provided {@link O}
+     * @param <O>       the type of the object
      * @return a new {@link FieldCodec} for {@link T}, as a required field
      */
-    default <O> @NotNull FieldCodec<O, T> toRequiredFieldCodec(@NotNull String name, @NotNull Function<O, T> getter) {
-        return new FieldCodec.Required<>(name, this, getter);
-    }
-
-    /**
-     * Creates a new {@link FieldCodec} for {@link T}, as an optional field.
-     *
-     * @param name   the name of the field
-     * @param getter the {@link Function} to get the value of the field from the provided {@link O}
-     * @param <O>    the type of the object
-     * @return a new {@link FieldCodec} for {@link T}, as an optional field
-     */
-    default <O> @NotNull FieldCodec<O, T> toNullableFieldCodec(@NotNull String name, @NotNull Function<O, T> getter) {
-        return new FieldCodec.DefaultValue<>(name, this, getter, null);
-    }
-
-    /**
-     * Creates a new {@link FieldCodec} for {@link T}, with the specified default value.
-     *
-     * @param name         the name of the field
-     * @param getter       the {@link Function} to get the value of the field from the provided {@link O}
-     * @param defaultValue the default value of the field
-     * @param <O>          the type of the object
-     * @return a new {@link FieldCodec} for {@link T}, with the specified default value
-     */
-    default <O> @NotNull FieldCodec<O, T> toFieldCodecWithDefaultValue(@NotNull String name, @NotNull Function<O, T> getter, @NotNull T defaultValue) {
-        return new FieldCodec.DefaultValue<>(name, this, getter, defaultValue);
-    }
-
-    /**
-     * Creates a new {@link FieldCodec} for {@link T}, with the specified default value supplier.
-     *
-     * @param name     the name of the field
-     * @param getter   the {@link Function} to get the value of the field from the provided {@link O}
-     * @param supplier the {@link Supplier} to get the default value of the field
-     * @param <O>      the type of the object
-     * @return a new {@link FieldCodec} for {@link T}, with the specified default value supplier
-     */
-    default <O> @NotNull FieldCodec<O, T> toFieldCodecWithDefaultValueSupplier(@NotNull String name, @NotNull Function<O, T> getter, @NotNull Supplier<? extends T> supplier) {
-        return new FieldCodec.DefaultValueSupplier<>(name, this, getter, supplier);
+    default <O> @NotNull FieldCodecBuilder<O, T> toFieldCodec(@NotNull String fieldName, @NotNull Function<O, T> getter) {
+        return FieldCodec.builder(fieldName, this, getter);
     }
 
     /**

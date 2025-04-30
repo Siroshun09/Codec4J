@@ -47,7 +47,7 @@ record FieldList1<T, F1>(FieldCodec<T, F1> codec,
         public @NotNull Result<T, DecodeError> construct() {
             return this.decoded ?
                     Result.success(FieldList1.this.constructor.apply(this.decodedField)) :
-                    FieldList1.this.codec.fallbackValue().map(FieldList1.this.constructor);
+                    FieldList1.this.codec.onNotDecoded().map(FieldList1.this.constructor);
         }
     }
 }
