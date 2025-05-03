@@ -16,59 +16,47 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public final class FieldCodecBuilder<T, F> {
+public final class FieldCodecBuilder<F> {
 
     private final String fieldName;
     private final Codec<F> codec;
-    private final Function<T, F> getter;
+    private Supplier<Result<F, DecodeError>> defaultValueSupplier;
 
-    FieldCodecBuilder(@NotNull String fieldName, @NotNull Codec<F> codec, @NotNull Function<T, F> getter) {
+    FieldCodecBuilder(@NotNull String fieldName, @NotNull Codec<F> codec) {
         this.fieldName = fieldName;
         this.codec = codec;
-        this.getter = getter;
     }
 
-    @Contract(" -> new")
-    public @NotNull FieldCodec<T, F> required() {
-        return this.build(null, () -> new FieldCodec.RequiredFieldError(this.fieldName).asFailure());
+    public FieldCodecBuilder<F> defaultValue(F defaultValue) {
+        this.defaultValueSupplier = () -> Result.success(defaultValue);
+        return this;
     }
 
-    @Contract(" -> new")
-    public @NotNull FieldCodec<T, F> optional() {
-        return this.build(null, Result::success);
+    public FieldCodecBuilder<F> defaultValueSupplier(Supplier<F> defaultValueSupplier) {
+        this.defaultValueSupplier = () -> Result.success(defaultValueSupplier.get());
+        return this;
+    }
+
+    public <T> @NotNull FieldCodec<T, F> required(@NotNull Function<T, F> getter) {
+        return this.build(getter, null, Objects.requireNonNullElseGet(
+            this.defaultValueSupplier,
+            () -> () -> new FieldCodec.RequiredFieldError(this.fieldName).asFailure()
+        ));
     }
 
     @Contract("_ -> new")
-    public @NotNull FieldCodec<T, F> optional(@NotNull Predicate<T> omit) {
-        Objects.requireNonNull(omit);
-        return this.build(omit, Result::success);
-    }
-
-    @Contract("_ -> new")
-    public @NotNull FieldCodec<T, F> withDefaultValue(@Nullable F defaultValue) {
-        return this.build(null, () -> Result.success(defaultValue));
+    public <T> @NotNull FieldCodec<T, F> optional(@NotNull Function<T, F> getter) {
+        return this.build(getter, null, Objects.requireNonNullElseGet(this.defaultValueSupplier, () -> Result::success));
     }
 
     @Contract("_, _ -> new")
-    public @NotNull FieldCodec<T, F> withDefaultValue(@Nullable F defaultValue, @NotNull Predicate<T> omit) {
-        Objects.requireNonNull(omit);
-        return this.build(omit, () -> Result.success(defaultValue));
+    public <T> @NotNull FieldCodec<T, F> optional(@NotNull Function<T, F> getter, @NotNull Predicate<T> omit) {
+        return this.build(getter, omit, Objects.requireNonNullElseGet(this.defaultValueSupplier, () -> Result::success)
+        );
     }
 
-    @Contract("_ -> new")
-    public @NotNull FieldCodec<T, F> withDefaultValueSupplier(@NotNull Supplier<F> defaultValueSupplier) {
-        Objects.requireNonNull(defaultValueSupplier);
-        return this.build(null, () -> Result.success(defaultValueSupplier.get()));
-    }
-
-    @Contract("_, _ -> new")
-    public @NotNull FieldCodec<T, F> withDefaultValueSupplier(@NotNull Supplier<F> defaultValueSupplier, @NotNull Predicate<T> omit) {
-        Objects.requireNonNull(omit);
-        return this.build(omit, () -> Result.success(defaultValueSupplier.get()));
-    }
-
-    private @NotNull FieldCodec<T, F> build(@Nullable Predicate<T> omit, @NotNull Supplier<Result<F, DecodeError>> onNotDecoded) {
-        return new FieldCodecImpl<>(this.fieldName, this.codec, this.getter, omit, onNotDecoded);
+    private <T> @NotNull FieldCodec<T, F> build(@NotNull Function<T, F> getter, @Nullable Predicate<T> omit, @NotNull Supplier<Result<F, DecodeError>> onNotDecoded) {
+        return new FieldCodecImpl<>(this.fieldName, this.codec, getter, omit, onNotDecoded);
     }
 
     private record FieldCodecImpl<T, F>(@NotNull String fieldName,

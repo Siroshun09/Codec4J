@@ -132,15 +132,13 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
     }
 
     /**
-     * Creates a new {@link FieldCodecBuilder} for {@link T}, as a field of an object {@link O}.
+     * Creates a new {@link FieldCodecBuilder} for {@link T}.
      *
      * @param fieldName the name of the field
-     * @param getter    the {@link Function} to get the value of the field from the provided {@link O}
-     * @param <O>       the type of the object
-     * @return a new {@link FieldCodec} for {@link T}, as a required field
+     * @return a new {@link FieldCodec} for {@link T}
      */
-    default <O> @NotNull FieldCodecBuilder<O, T> toFieldCodec(@NotNull String fieldName, @NotNull Function<O, T> getter) {
-        return FieldCodec.builder(fieldName, this, getter);
+    default @NotNull FieldCodecBuilder<T> toFieldCodec(@NotNull String fieldName) {
+        return FieldCodec.builder(fieldName, this);
     }
 
     /**

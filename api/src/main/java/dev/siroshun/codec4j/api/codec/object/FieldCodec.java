@@ -11,16 +11,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
-import java.util.function.Function;
 
 public interface FieldCodec<T, F> {
 
-    @Contract("_, _, _ -> new")
-    static <T, F> @NotNull FieldCodecBuilder<T, F> builder(@NotNull String fieldName, @NotNull Codec<F> codec, @NotNull Function<T, F> getter) {
+    @Contract("_, _ -> new")
+    static <F> @NotNull FieldCodecBuilder<F> builder(@NotNull String fieldName, @NotNull Codec<F> codec) {
         Objects.requireNonNull(fieldName);
         Objects.requireNonNull(codec);
-        Objects.requireNonNull(getter);
-        return new FieldCodecBuilder<>(fieldName, codec, getter);
+        return new FieldCodecBuilder<>(fieldName, codec);
     }
 
     @NotNull String fieldName();
