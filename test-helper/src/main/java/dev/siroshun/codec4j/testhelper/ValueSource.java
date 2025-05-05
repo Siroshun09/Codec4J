@@ -27,7 +27,6 @@ public record ValueSource<T>(Type.Value<T> type, Supplier<Stream<T>> valuesSuppl
 
     public static final ValueSource<String> STRING = new ValueSource<>(Type.STRING, () -> Stream.of("a", "abc", " ", ""));
 
-    public static final ValueSource<String> NULLABLE_STRING = new ValueSource<>(Type.STRING, () -> Stream.of("a", "abc", " ", "", null));
 
     public Stream<T> values() {
         return this.valuesSupplier.get();

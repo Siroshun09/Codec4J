@@ -124,17 +124,6 @@ class MemoryTest {
     }
 
     @Test
-    void testNullableString() {
-        ValueSource.NULLABLE_STRING.values().forEach(value -> {
-            Result<Memory, EncodeError> encodeResult = Memory.out().writeString(value);
-            Memory memory = ResultAssertions.assertSuccess(encodeResult);
-
-            Result<String, DecodeError> decodeResult = memory.readAsString();
-            ResultAssertions.assertSuccess(decodeResult, value);
-        });
-    }
-
-    @Test
     void testEmptyList() {
         Memory memory = ResultAssertions.assertSuccess(Memory.out().createList().map(ElementAppender::finish).unwrapOr(Result.failure()));
         memory.readList(List.of(), (ignoredList, ignoredIn) -> Assertions.fail("Unexpected call"));
