@@ -4,6 +4,5 @@ plugins {
 }
 
 dependencies {
-    testImplementation(projects.codec4jIoMemory)
     testImplementation(projects.codec4jTestHelper)
 }
