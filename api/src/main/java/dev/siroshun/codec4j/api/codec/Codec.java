@@ -13,6 +13,7 @@ import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -107,6 +108,15 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
      */
     default @NotNull Codec<Set<T>> toSetCodec() {
         return CollectionCodec.set(this);
+    }
+
+    /**
+     * Creates a new {@link Codec} for {@link Collection} of {@link T}.
+     *
+     * @return a new {@link Codec} for {@link Collection} of {@link T}
+     */
+    default @NotNull Codec<Collection<T>> toCollectionCodec() {
+        return CollectionCodec.collection(this);
     }
 
     /**

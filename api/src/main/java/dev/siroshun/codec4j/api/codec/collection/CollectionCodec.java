@@ -71,6 +71,26 @@ public final class CollectionCodec<E, C> implements Codec<C> {
     }
 
     /**
+     * Creates a {@link CollectionCodec} for {@link Collection} with the specified element type {@link E}.
+     *
+     * @param elementCodec the {@link Codec} for elements
+     * @param <E>          the type of the element
+     * @return a {@link CollectionCodec}
+     */
+    public static <E> @NotNull CollectionCodec<E, Collection<E>> collection(@NotNull Codec<E> elementCodec) {
+        Objects.requireNonNull(elementCodec);
+        return create(new Processor<>(
+            elementCodec,
+            ArrayList::new,
+            (col, element) -> {
+                col.add(element);
+                return Result.success();
+            },
+            UnaryOperator.identity()
+        ));
+    }
+
+    /**
      * Creates a {@link CollectionCodec} with the {@link ElementProcessor}.
      *
      * @param processor the {@link ElementProcessor}
