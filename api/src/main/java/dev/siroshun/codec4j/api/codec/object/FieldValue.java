@@ -52,6 +52,7 @@ final class FieldValue<F> {
 
         if (result.isSuccess()) {
             this.value = result.unwrap();
+            this.decoded = true;
             return Result.success();
         }
 
