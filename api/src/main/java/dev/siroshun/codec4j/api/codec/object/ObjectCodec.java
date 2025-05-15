@@ -133,7 +133,7 @@ public final class ObjectCodec<T> implements Codec<T> {
                     }
 
                     return constructor.decodeField(fieldNameResult.unwrap(), entryIn.valueIn());
-                }).map(ObjectConstructor::construct).map(Result::unwrap);
+                }).flatMap(ObjectConstructor::construct);
     }
 
     interface ObjectConstructor<T> {
