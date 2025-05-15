@@ -149,6 +149,8 @@ class YamlNodeIn implements In {
         Object object = this.constructObject();
         if (object instanceof String str) {
             return Result.success(str);
+        } else if (this.node instanceof ScalarNode scalarNode) {
+            return Result.success(scalarNode.getValue());
         }
         return DecodeError.typeMismatch(Type.STRING, this.getType()).asFailure();
     }
