@@ -6,7 +6,6 @@ import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.codec4j.api.error.EncodeError;
-import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.function.Function10;
 import dev.siroshun.jfun.function.Function3;
 import dev.siroshun.jfun.function.Function4;
@@ -116,16 +115,6 @@ public final class ObjectCodec<T> implements Codec<T> {
         return in.readMap(
                 this.objectConstructorSupplier.get(),
                 (constructor, entryIn) -> {
-                    var type = entryIn.keyIn().type();
-
-                    if (type.isFailure()) {
-                        return type.asFailure();
-                    }
-
-                    if (!type.unwrap().isString()) {
-                        return DecodeError.typeMismatch(Type.STRING, type.unwrap()).asFailure();
-                    }
-
                     var fieldNameResult = entryIn.keyIn().readAsString();
 
                     if (fieldNameResult.isFailure()) {
