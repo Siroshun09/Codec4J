@@ -9,7 +9,7 @@ snakeyaml = "2.4"
 junit = "5.12.2"
 
 # plugins
-gradle-plugins = "1.1.0"
+gradle-plugins = "1.2.1"
 
 [libraries]
 
