@@ -1,7 +1,7 @@
 package dev.siroshun.codec4j.io.yaml;
 
-import dev.siroshun.codec4j.api.codec.Decoder;
-import dev.siroshun.codec4j.api.codec.Encoder;
+import dev.siroshun.codec4j.api.decoder.Decoder;
+import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.file.TextFileIO;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.error.DecodeError;

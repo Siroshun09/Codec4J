@@ -1,8 +1,8 @@
 package dev.siroshun.codec4j.io.gson;
 
 import com.google.gson.Gson;
-import dev.siroshun.codec4j.api.codec.Decoder;
-import dev.siroshun.codec4j.api.codec.Encoder;
+import dev.siroshun.codec4j.api.decoder.Decoder;
+import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.file.TextFileIO;

@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.codec;
+package dev.siroshun.codec4j.api.decoder;
 
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.In;

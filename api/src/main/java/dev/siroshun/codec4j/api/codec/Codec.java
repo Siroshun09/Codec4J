@@ -2,8 +2,10 @@ package dev.siroshun.codec4j.api.codec;
 
 import dev.siroshun.codec4j.api.codec.collection.CollectionCodec;
 import dev.siroshun.codec4j.api.codec.collection.MapCodec;
+import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.codec.object.FieldCodec;
 import dev.siroshun.codec4j.api.codec.object.FieldCodecBuilder;
+import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.In;

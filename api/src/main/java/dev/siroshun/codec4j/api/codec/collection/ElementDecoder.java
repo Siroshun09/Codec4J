@@ -1,6 +1,6 @@
 package dev.siroshun.codec4j.api.codec.collection;
 
-import dev.siroshun.codec4j.api.codec.Decoder;
+import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.jfun.result.Result;
