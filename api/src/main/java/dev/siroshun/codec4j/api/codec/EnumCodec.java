@@ -3,8 +3,18 @@ package dev.siroshun.codec4j.api.codec;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.jfun.result.Result;
 
+/**
+ * A {@link Codec} for {@link Enum}s.
+ */
 public final class EnumCodec {
 
+    /**
+     * Creates a new {@link Codec} of the specified {@link Enum} class using {@link Enum#name()} for encoding/decoding.
+     *
+     * @param enumClass the class of {@link E}
+     * @return a new {@link Codec} of the specified {@link Enum} class
+     * @param <E> a type of the {@link Enum}
+     */
     public static <E extends Enum<E>> Codec<E> byName(Class<E> enumClass) {
         return Codec.STRING.flatXmap(
             e -> Result.success(e.name()),
@@ -19,6 +29,13 @@ public final class EnumCodec {
         );
     }
 
+    /**
+     * Creates a new {@link Codec} of the specified {@link Enum} class using {@link Enum#ordinal()} for encoding/decoding.
+     *
+     * @param enumClass the class of {@link E}
+     * @return a new {@link Codec} of the specified {@link Enum} class
+     * @param <E> a type of the {@link Enum}
+     */
     public static <E extends Enum<E>> Codec<E> byOrdinal(Class<E> enumClass) {
         return Codec.INT.flatXmap(
             e -> Result.success(e.ordinal()),
