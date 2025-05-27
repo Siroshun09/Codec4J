@@ -49,9 +49,21 @@ public final class EnumCodec {
         );
     }
 
+    /**
+     * A {@link DecodeError.Failure} for {@link Codec}s created by {@link #byName(Class)}.
+     *
+     * @param enumClass the {@link Enum} class
+     * @param name the unknown enum name
+     */
     public record UnknownEnumNameDecodeError(Class<?> enumClass, String name) implements DecodeError.Failure {
     }
 
+    /**
+     * A {@link DecodeError.Failure} for {@link Codec}s created by {@link #byOrdinal(Class)}.
+     *
+     * @param enumClass the {@link Enum} class
+     * @param ordinal the unknown ordinal value
+     */
     public record UnknownEnumOrdinalDecodeError(Class<?> enumClass, int ordinal) implements DecodeError.Failure {
     }
 
