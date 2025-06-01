@@ -27,7 +27,7 @@ public interface FieldDecoder<F> {
         return create(fieldName, decoder, () -> Result.success(defaultValue));
     }
 
-    static <F> @NotNull FieldDecoder<F> suppling(@NotNull String fieldName, @NotNull Decoder<F> decoder, @NotNull Supplier<F> defaultValueSupplier) {
+    static <F> @NotNull FieldDecoder<F> supplying(@NotNull String fieldName, @NotNull Decoder<F> decoder, @NotNull Supplier<F> defaultValueSupplier) {
         Objects.requireNonNull(defaultValueSupplier);
         return create(fieldName, decoder, () -> Result.success(defaultValueSupplier.get()));
     }

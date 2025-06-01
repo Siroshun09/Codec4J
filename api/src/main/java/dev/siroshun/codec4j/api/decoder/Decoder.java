@@ -83,8 +83,8 @@ public interface Decoder<T> {
         return FieldDecoder.optional(fieldName, this, defaultValue);
     }
 
-    default @NotNull FieldDecoder<T> toSupplingFieldDecoder(@NotNull String fieldName, @NotNull Supplier<T> defaultValueSupplier) {
-        return FieldDecoder.suppling(fieldName, this, defaultValueSupplier);
+    default @NotNull FieldDecoder<T> toSupplyingFieldDecoder(@NotNull String fieldName, @NotNull Supplier<T> defaultValueSupplier) {
+        return FieldDecoder.supplying(fieldName, this, defaultValueSupplier);
     }
 
     /**
