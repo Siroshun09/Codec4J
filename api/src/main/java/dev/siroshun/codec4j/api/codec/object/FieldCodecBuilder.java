@@ -46,11 +46,10 @@ public final class FieldCodecBuilder<F> {
     public <T> FieldCodec<T, F> build(@NotNull Function<T, F> getter, @NotNull Predicate<T> omit) {
         Objects.requireNonNull(getter);
         Objects.requireNonNull(omit);
+        Objects.requireNonNull(this.defaultValueSupplier, "Default value must be specified when omitting field.");
         return FieldCodec.create(
             FieldEncoder.create(this.fieldName, this.codec, getter, omit),
-            this.defaultValueSupplier == null ?
-                FieldDecoder.required(this.fieldName, this.codec) :
-                FieldDecoder.create(this.fieldName, this.codec, this.defaultValueSupplier)
+            FieldDecoder.create(this.fieldName, this.codec, this.defaultValueSupplier)
         );
     }
 }
