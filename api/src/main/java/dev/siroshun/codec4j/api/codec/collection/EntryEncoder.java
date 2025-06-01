@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * An {@link Encoder} for encoding entries to an {@link Out}.
@@ -19,11 +21,27 @@ import java.util.Iterator;
 public interface EntryEncoder<E, T> extends Encoder<T> {
 
     /**
-     * Returns the {@link EntryProcessor} for extracting entries from {@link T} and decoding them.
+     * Creates an {@link EntryEncoder} for encoding entries of {@link Map} to an {@link Out}.
      *
-     * @return the {@link EntryProcessor}
+     * @param keyEncoder   the {@link Encoder} for encoding the key of the entry to an {@link Out}
+     * @param valueEncoder the {@link Encoder} for encoding the value of the entry to an {@link Out}
+     * @param <K>          the type of the key
+     * @param <V>          the type of the value
+     * @return an {@link EntryEncoder} for encoding entries of {@link Map} to an {@link Out}
      */
-    @NotNull EntryProcessor<?, ?, E, T> processor();
+    static <K, V> @NotNull Encoder<Map<K, V>> map(@NotNull Encoder<K> keyEncoder, @NotNull Encoder<V> valueEncoder) {
+        Objects.requireNonNull(keyEncoder);
+        Objects.requireNonNull(valueEncoder);
+        EntryProcessors.MapEntryEncodeProcessor<K, V> processor = new EntryProcessors.MapEntryEncodeProcessor<>(keyEncoder, valueEncoder);
+        return (EntryEncoder<Map.Entry<K, V>, Map<K, V>>) () -> processor;
+    }
+
+    /**
+     * Returns the {@link EntryEncoder.EncodeProcessor} for extracting entries from {@link T} and decoding them.
+     *
+     * @return the {@link EntryEncoder.EncodeProcessor}
+     */
+    @NotNull EntryEncoder.EncodeProcessor<E, T> encodeProcessor();
 
     @Override
     default <O> @NotNull Result<O, EncodeError> encode(@NotNull Out<O> out, @UnknownNullability T input) {
@@ -34,11 +52,11 @@ public interface EntryEncoder<E, T> extends Encoder<T> {
         }
 
         EntryAppender<O> appender = appenderResult.unwrap();
-        Iterator<E> iterator = this.processor().toEntryIterator(input);
+        Iterator<E> iterator = this.encodeProcessor().toEntryIterator(input);
 
         while (iterator.hasNext()) {
             E entry = iterator.next();
-            Result<Void, EncodeError> entryResult = appender.append(keyOut -> this.processor().encodeKey(keyOut, entry), valueOut -> this.processor().encodeValue(valueOut, entry));
+            Result<Void, EncodeError> entryResult = appender.append(keyOut -> this.encodeProcessor().encodeKey(keyOut, entry), valueOut -> this.encodeProcessor().encodeValue(valueOut, entry));
 
             if (entryResult.isFailure()) {
                 return entryResult.asFailure();
@@ -46,5 +64,43 @@ public interface EntryEncoder<E, T> extends Encoder<T> {
         }
 
         return appender.finish();
+    }
+
+    /**
+     * An interface for processing entries of the collection.
+     *
+     * @param <E> the type of entry
+     * @param <T> the type of collection
+     */
+    interface EncodeProcessor<E, T> {
+
+        /**
+         * Encodes the key of the entry to the provided {@link Out}.
+         *
+         * @param out   the {@link Out} for writing the encoded key
+         * @param entry the key-value entry to encode to the {@link Out}
+         * @param <O>   the type of the output destination
+         * @return a result containing {@code null} if the operation succeeded, or a {@link EncodeError} if the operation failed
+         */
+        <O> @NotNull Result<O, EncodeError> encodeKey(@NotNull Out<O> out, @UnknownNullability E entry);
+
+        /**
+         * Encodes the value of the given entry to the provided {@link Out}.
+         *
+         * @param out   the {@link Out} instance for writing the encoded value
+         * @param entry the key-value entry whose value is to be encoded
+         * @param <O>   the type of the output destination
+         * @return a result containing the output destination if the operation is successful, or an {@link EncodeError} if the operation fails
+         */
+        <O> @NotNull Result<O, EncodeError> encodeValue(@NotNull Out<O> out, @UnknownNullability E entry);
+
+        /**
+         * Creates an {@link Iterator} from {@link T} for encoding entries.
+         *
+         * @param input the object to encode
+         * @return the {@link Iterator} of entries
+         */
+        @NotNull Iterator<E> toEntryIterator(@UnknownNullability T input);
+
     }
 }

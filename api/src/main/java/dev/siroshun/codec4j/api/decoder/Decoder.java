@@ -1,6 +1,7 @@
 package dev.siroshun.codec4j.api.decoder;
 
 import dev.siroshun.codec4j.api.codec.collection.ElementDecoder;
+import dev.siroshun.codec4j.api.codec.collection.EntryDecoder;
 import dev.siroshun.codec4j.api.decoder.object.FieldDecoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.In;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -115,5 +117,27 @@ public interface Decoder<T> {
      */
     default @NotNull Decoder<Set<T>> toSetDecoder(boolean allowDuplicates) {
         return ElementDecoder.set(this, allowDuplicates);
+    }
+
+    /**
+     * Creates a {@link Decoder} that decodes a {@link Map}, using this {@link Decoder} for decoding the key.
+     *
+     * @param valueDecoder the {@link Decoder} for decoding the value of the entry to an {@link In}
+     * @param <V>          the type of the value
+     * @return a {@link Decoder} that decodes a {@link Map}
+     */
+    default <V> @NotNull Decoder<Map<T, V>> toMapDecoderAsKey(@NotNull Decoder<V> valueDecoder) {
+        return EntryDecoder.map(this, valueDecoder);
+    }
+
+    /**
+     * Creates a {@link Decoder} that decodes a {@link Map}, using this {@link Decoder} for decoding the value.
+     *
+     * @param keyDecoder the {@link Decoder} for decoding the key of the entry to an {@link In}
+     * @param <K>        the type of the key
+     * @return a {@link Decoder} that decodes a {@link Map}
+     */
+    default <K> @NotNull Decoder<Map<K, T>> toMapDecoderAsValue(@NotNull Decoder<K> keyDecoder) {
+        return EntryDecoder.map(keyDecoder, this);
     }
 }
