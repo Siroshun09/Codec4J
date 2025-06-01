@@ -1,15 +1,11 @@
 package dev.siroshun.codec4j.api.codec.object;
 
 import dev.siroshun.codec4j.api.codec.Codec;
+import dev.siroshun.codec4j.api.decoder.object.FieldDecoder;
+import dev.siroshun.codec4j.api.encoder.object.FieldEncoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
-import dev.siroshun.codec4j.api.error.EncodeError;
-import dev.siroshun.codec4j.api.io.In;
-import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.jfun.result.Result;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -37,51 +33,24 @@ public final class FieldCodecBuilder<F> {
         return this;
     }
 
-    public <T> @NotNull FieldCodec<T, F> required(@NotNull Function<T, F> getter) {
-        return this.build(getter, null, Objects.requireNonNullElseGet(
-            this.defaultValueSupplier,
-            () -> () -> new FieldCodec.RequiredFieldError(this.fieldName).asFailure()
-        ));
-    }
-
-    @Contract("_ -> new")
-    public <T> @NotNull FieldCodec<T, F> optional(@NotNull Function<T, F> getter) {
-        return this.build(getter, null, Objects.requireNonNullElseGet(this.defaultValueSupplier, () -> Result::success));
-    }
-
-    @Contract("_, _ -> new")
-    public <T> @NotNull FieldCodec<T, F> optional(@NotNull Function<T, F> getter, @NotNull Predicate<T> omit) {
-        return this.build(getter, omit, Objects.requireNonNullElseGet(this.defaultValueSupplier, () -> Result::success)
+    public <T> FieldCodec<T, F> build(@NotNull Function<T, F> getter) {
+        Objects.requireNonNull(getter);
+        return FieldCodec.create(
+            FieldEncoder.create(this.fieldName, this.codec, getter, null),
+            this.defaultValueSupplier == null ?
+                FieldDecoder.required(this.fieldName, this.codec) :
+                FieldDecoder.create(this.fieldName, this.codec, this.defaultValueSupplier)
         );
     }
 
-    private <T> @NotNull FieldCodec<T, F> build(@NotNull Function<T, F> getter, @Nullable Predicate<T> omit, @NotNull Supplier<Result<F, DecodeError>> onNotDecoded) {
-        return new FieldCodecImpl<>(this.fieldName, this.codec, getter, omit, onNotDecoded);
-    }
-
-    private record FieldCodecImpl<T, F>(@NotNull String fieldName,
-                                        @NotNull Codec<F> codec, @NotNull Function<T, F> getter,
-                                        @Nullable Predicate<T> canOmit,
-                                        @NotNull Supplier<Result<F, DecodeError>> onNotDecodedSupplier) implements FieldCodec<T, F> {
-
-        @Override
-        public @NotNull <O> Result<O, EncodeError> encodeFieldValue(@NotNull Out<O> out, @UnknownNullability T input) {
-            return this.codec.encode(out, this.getter.apply(input));
-        }
-
-        @Override
-        public boolean canOmit(@UnknownNullability T input) {
-            return this.canOmit != null && this.canOmit.test(input);
-        }
-
-        @Override
-        public @NotNull Result<F, DecodeError> decodeFieldValue(@NotNull In in) {
-            return this.codec.decode(in);
-        }
-
-        @Override
-        public @NotNull Result<F, DecodeError> onNotDecoded() {
-            return this.onNotDecodedSupplier.get();
-        }
+    public <T> FieldCodec<T, F> build(@NotNull Function<T, F> getter, @NotNull Predicate<T> omit) {
+        Objects.requireNonNull(getter);
+        Objects.requireNonNull(omit);
+        return FieldCodec.create(
+            FieldEncoder.create(this.fieldName, this.codec, getter, omit),
+            this.defaultValueSupplier == null ?
+                FieldDecoder.required(this.fieldName, this.codec) :
+                FieldDecoder.create(this.fieldName, this.codec, this.defaultValueSupplier)
+        );
     }
 }

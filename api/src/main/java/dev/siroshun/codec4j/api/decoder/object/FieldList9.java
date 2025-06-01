@@ -1,20 +1,21 @@
-package dev.siroshun.codec4j.api.codec.object;
+package dev.siroshun.codec4j.api.decoder.object;
 
 import dev.siroshun.jfun.function.Function9;
-import java.util.Map;
-import java.util.function.Supplier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-record FieldList9<T, F1, F2, F3, F4, F5, F6, F7, F8, F9>(FieldCodec<T, F1> codec1, FieldCodec<T, F2> codec2, FieldCodec<T, F3> codec3, FieldCodec<T, F4> codec4, FieldCodec<T, F5> codec5, FieldCodec<T, F6> codec6, FieldCodec<T, F7> codec7, FieldCodec<T, F8> codec8, FieldCodec<T, F9> codec9, Function9<F1, F2, F3, F4, F5, F6, F7, F8, F9, T> constructor) implements Supplier<ObjectCodec.ObjectConstructor<T>> {
+import java.util.Map;
+import java.util.function.Supplier;
+
+record FieldList9<T, F1, F2, F3, F4, F5, F6, F7, F8, F9>(FieldDecoder<F1> codec1, FieldDecoder<F2> codec2, FieldDecoder<F3> codec3, FieldDecoder<F4> codec4, FieldDecoder<F5> codec5, FieldDecoder<F6> codec6, FieldDecoder<F7> codec7, FieldDecoder<F8> codec8, FieldDecoder<F9> codec9, Function9<F1, F2, F3, F4, F5, F6, F7, F8, F9, T> constructor) implements Supplier<ObjectDecoder.ObjectConstructor<T>> {
 
     @Contract(" -> new")
     @Override
-    public  ObjectCodec.ObjectConstructor<T> get() {
+    public  ObjectDecoder.ObjectConstructor<T> get() {
         return new Constructor();
     }
 
-    private class Constructor implements ObjectCodec.MultipleFieldObjectConstructor<T> {
+    private class Constructor implements ObjectDecoder.MultipleFieldObjectConstructor<T> {
 
         private final FieldValue<F1> field1 = new FieldValue<>(FieldList9.this.codec1);
 

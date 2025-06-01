@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.codec.object;
+package dev.siroshun.codec4j.api.decoder.object;
 
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.In;
@@ -8,20 +8,20 @@ import org.jetbrains.annotations.Nullable;
 
 final class FieldValue<F> {
 
-    private final FieldCodec<?, F> codec;
+    private final FieldDecoder<F> codec;
     private @Nullable F value;
     private boolean decoded;
 
-    FieldValue(@NotNull FieldCodec<?, F> codec) {
+    FieldValue(@NotNull FieldDecoder<F> codec) {
         this.codec = codec;
     }
 
     @NotNull Result<Void, DecodeError> decode(@NotNull In in) {
         if (this.decoded) {
-            return new FieldCodec.AlreadyDecodedError(this.codec.fieldName()).asFailure();
+            return new AlreadyDecodedError(this.codec.fieldName()).asFailure();
         }
 
-        var result = this.codec.decodeFieldValue(in);
+        Result<F, DecodeError> result = this.codec.decodeFieldValue(in);
         this.decoded = true;
 
         if (result.isSuccess()) {
@@ -33,7 +33,7 @@ final class FieldValue<F> {
             return result.asFailure();
         }
 
-        var onNotDecoded = this.codec.onNotDecoded();
+        Result<F, DecodeError> onNotDecoded = this.codec.onNotDecoded();
 
         if (onNotDecoded.isSuccess()) {
             this.value = onNotDecoded.unwrap();

@@ -1,20 +1,22 @@
-package dev.siroshun.codec4j.api.codec.object;
+package dev.siroshun.codec4j.api.decoder.object;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
-record FieldList2<T, F1, F2>(FieldCodec<T, F1> codec1, FieldCodec<T, F2> codec2, BiFunction<F1, F2, T> constructor) implements Supplier<ObjectCodec.ObjectConstructor<T>> {
+record FieldList2<T, F1, F2>(FieldDecoder<F1> codec1, FieldDecoder<F2> codec2,
+                             BiFunction<F1, F2, T> constructor) implements Supplier<ObjectDecoder.ObjectConstructor<T>> {
 
     @Contract(" -> new")
     @Override
-    public @NotNull ObjectCodec.ObjectConstructor<T> get() {
+    public @NotNull ObjectDecoder.ObjectConstructor<T> get() {
         return new Constructor();
     }
 
-    private class Constructor implements ObjectCodec.MultipleFieldObjectConstructor<T> {
+    private class Constructor implements ObjectDecoder.MultipleFieldObjectConstructor<T> {
 
         private final FieldValue<F1> field1 = new FieldValue<>(FieldList2.this.codec1);
 

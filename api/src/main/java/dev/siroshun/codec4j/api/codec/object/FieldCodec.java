@@ -1,18 +1,14 @@
 package dev.siroshun.codec4j.api.codec.object;
 
 import dev.siroshun.codec4j.api.codec.Codec;
-import dev.siroshun.codec4j.api.error.DecodeError;
-import dev.siroshun.codec4j.api.error.EncodeError;
-import dev.siroshun.codec4j.api.io.In;
-import dev.siroshun.codec4j.api.io.Out;
-import dev.siroshun.jfun.result.Result;
+import dev.siroshun.codec4j.api.decoder.object.FieldDecoder;
+import dev.siroshun.codec4j.api.encoder.object.FieldEncoder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Objects;
 
-public interface FieldCodec<T, F> {
+public interface FieldCodec<T, F> extends FieldEncoder<T>, FieldDecoder<F> {
 
     @Contract("_, _ -> new")
     static <F> @NotNull FieldCodecBuilder<F> builder(@NotNull String fieldName, @NotNull Codec<F> codec) {
@@ -21,19 +17,13 @@ public interface FieldCodec<T, F> {
         return new FieldCodecBuilder<>(fieldName, codec);
     }
 
-    @NotNull String fieldName();
-
-    <O> @NotNull Result<O, EncodeError> encodeFieldValue(@NotNull Out<O> out, @UnknownNullability T input);
-
-    boolean canOmit(@UnknownNullability T input);
-
-    @NotNull Result<F, DecodeError> decodeFieldValue(@NotNull In in);
-
-    @NotNull Result<F, DecodeError> onNotDecoded();
-
-    record RequiredFieldError(String fieldName) implements DecodeError.Failure {
+    static <T, F> @NotNull FieldCodec<T, F> create(@NotNull FieldEncoder<T> encoder, @NotNull FieldDecoder<F> decoder) {
+        Objects.requireNonNull(encoder);
+        Objects.requireNonNull(decoder);
+        if (!encoder.fieldName().equals(decoder.fieldName())) {
+            throw new IllegalArgumentException("Field name of encoder and decoder must be same.");
+        }
+        return new FieldCodecImpl<>(encoder.fieldName(), encoder, decoder);
     }
 
-    record AlreadyDecodedError(String fieldName) implements DecodeError.Failure {
-    }
 }

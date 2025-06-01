@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.codec.object;
+package dev.siroshun.codec4j.api.decoder.object;
 
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.In;
@@ -6,19 +6,18 @@ import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-record FieldList1<T, F1>(FieldCodec<T, F1> codec,
-                         Function<@Nullable F1, T> constructor) implements Supplier<ObjectCodec.ObjectConstructor<T>> {
+record FieldList1<T, F1>(FieldDecoder<F1> codec,
+                         Function<@Nullable F1, T> constructor) implements Supplier<ObjectDecoder.ObjectConstructor<T>> {
 
     @Override
-    public ObjectCodec.ObjectConstructor<T> get() {
+    public ObjectDecoder.ObjectConstructor<T> get() {
         return new Constructor();
     }
 
-    private class Constructor implements ObjectCodec.ObjectConstructor<T> {
+    private class Constructor implements ObjectDecoder.ObjectConstructor<T> {
 
         private @Nullable F1 decodedField = null;
         private boolean decoded = false;
@@ -28,9 +27,9 @@ record FieldList1<T, F1>(FieldCodec<T, F1> codec,
 
         @Override
         public @NotNull Result<Void, DecodeError> decodeField(String fieldName, In in) {
-            var field = FieldList1.this.codec;
+            FieldDecoder<F1> field = FieldList1.this.codec;
             if (field.fieldName().equals(fieldName)) {
-                var result = field.decodeFieldValue(in);
+                Result<F1, DecodeError> result = field.decodeFieldValue(in);
                 if (result.isSuccess()) {
                     this.decodedField = result.unwrap();
                     this.decoded = true;
