@@ -1,11 +1,14 @@
 package dev.siroshun.codec4j.api.decoder;
 
+import dev.siroshun.codec4j.api.codec.collection.ElementDecoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -67,5 +70,35 @@ public interface Decoder<T> {
     default @NotNull Decoder<T> catchError(@NotNull Function<? super DecodeError, Result<T, DecodeError>> onError) {
         Objects.requireNonNull(onError);
         return in -> Decoder.this.decode(in).flatMapError(onError);
+    }
+
+    /**
+     * Creates a {@link Decoder} that decodes a {@link List} of {@link T}.
+     *
+     * @return a {@link Decoder} that decodes a {@link List} of {@link T}
+     */
+    default @NotNull Decoder<List<T>> toListDecoder() {
+        return ElementDecoder.list(this);
+    }
+
+    /**
+     * Creates a {@link Decoder} that decodes a {@link Set} of {@link T}.
+     * <p>
+     * This {@link Decoder} does not allow duplicates in the set.
+     *
+     * @return a {@link Decoder} that decodes a {@link Set} of {@link T}
+     */
+    default @NotNull Decoder<Set<T>> toSetDecoder() {
+        return ElementDecoder.set(this);
+    }
+
+    /**
+     * Creates a {@link Decoder} that decodes a {@link Set} of {@link T}.
+     *
+     * @param allowDuplicates whether to allow duplicates in the set
+     * @return a {@link Decoder} that decodes a {@link Set} of {@link T}
+     */
+    default @NotNull Decoder<Set<T>> toSetDecoder(boolean allowDuplicates) {
+        return ElementDecoder.set(this, allowDuplicates);
     }
 }

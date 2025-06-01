@@ -1,5 +1,6 @@
 package dev.siroshun.codec4j.api.encoder;
 
+import dev.siroshun.codec4j.api.codec.collection.ElementEncoder;
 import dev.siroshun.codec4j.api.encoder.object.FieldEncoder;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.Out;
@@ -72,6 +73,16 @@ public interface Encoder<T> {
     @Contract("_, _, _ -> new")
     default <O> @NotNull FieldEncoder<O> toFieldEncoder(@NotNull String fieldName, @NotNull Function<O, T> getter, @Nullable Predicate<O> canOmit) {
         return FieldEncoder.create(fieldName, this, getter, canOmit);
+    }
+
+    /**
+     * Creates a new {@link ElementEncoder} that encodes the collection of {@link T} to an {@link Out}.
+     *
+     * @param <C> the type of the collection to encode
+     * @return a new {@link ElementEncoder} that encodes the collection of {@link T} to an {@link Out}
+     */
+    default <C extends Iterable<T>> @NotNull Encoder<C> toCollectionEncoder() {
+        return ElementEncoder.create(this);
     }
 
 }
