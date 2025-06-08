@@ -1,13 +1,22 @@
 package dev.siroshun.codec4j.api.codec;
 
+import dev.siroshun.codec4j.api.error.DecodeError;
+import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.Type;
+import dev.siroshun.codec4j.io.Memory;
 import dev.siroshun.codec4j.testhelper.CodecTester;
 import dev.siroshun.codec4j.testhelper.ValueSource;
+import dev.siroshun.jfun.result.Result;
+import dev.siroshun.jfun.result.assertion.ResultAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 class CodecTest {
@@ -60,5 +69,83 @@ class CodecTest {
         Assertions.assertEquals(Codec.STRING, codec.encoder());
         Assertions.assertEquals(Codec.STRING, codec.decoder());
         Assertions.assertEquals("test", named.name());
+    }
+
+    @Test
+    void named() {
+        Codec<String> codec = Codec.codec(Codec.STRING, Codec.STRING);
+        NamedCodec<?> named = Assertions.assertInstanceOf(NamedCodec.class, codec.named("test"));
+        Assertions.assertSame(codec, named.codec());
+        Assertions.assertEquals("test", named.name());
+    }
+
+    @Test
+    void xmap() {
+        Codec<String> codec = Codec.STRING.xmap(String::toUpperCase, String::toLowerCase);
+        Memory memory = ResultAssertions.assertSuccess(codec.encode(Memory.out(), "tEsT"));
+        ResultAssertions.assertSuccess(memory.readAsString(), "TEST");
+        ResultAssertions.assertSuccess(codec.decode(memory), "test");
+    }
+
+    @Test
+    void flatXmapSuccess() {
+        Codec<String> codec = Codec.STRING.flatXmap(
+            str -> Result.success(str.toUpperCase()),
+            str -> Result.success(str.toLowerCase())
+        );
+        Memory memory = ResultAssertions.assertSuccess(codec.encode(Memory.out(), "tEsT"));
+        ResultAssertions.assertSuccess(memory.readAsString(), "TEST");
+        ResultAssertions.assertSuccess(codec.decode(memory), "test");
+    }
+
+    @Test
+    void flatXmapFailure() {
+        Codec<String> codec = Codec.STRING.flatXmap(
+            str -> EncodeError.encodeFailure("encode error").asFailure(),
+            str -> DecodeError.decodeFailure("decode error").asFailure()
+        );
+        ResultAssertions.assertFailure(codec.encode(Memory.out(), "test"), EncodeError.encodeFailure("encode error"));
+        Memory memory = ResultAssertions.assertSuccess(Memory.out().writeString("TEST"));
+        ResultAssertions.assertFailure(codec.decode(memory), DecodeError.decodeFailure("decode error"));
+    }
+
+    @Test
+    void toListCodec() {
+        Codec<List<String>> codec = Codec.STRING.toListCodec();
+        CodecTester.test(codec, List.of());
+        CodecTester.test(codec, List.of("a"));
+        CodecTester.test(codec, List.of("a", "b", "c"));
+    }
+
+    @Test
+    void toSetCodec() {
+        Codec<Set<String>> codec = Codec.STRING.toSetCodec();
+        CodecTester.test(codec, Set.of());
+        CodecTester.test(codec, Set.of("a"));
+        CodecTester.test(codec, Set.of("a", "b", "c"));
+    }
+
+    @Test
+    void toCollectionCodec() {
+        Codec<Collection<String>> codec = Codec.STRING.toCollectionCodec();
+        CodecTester.test(codec, List.of());
+        CodecTester.test(codec, List.of("a"));
+        CodecTester.test(codec, List.of("a", "b", "c"));
+    }
+
+    @Test
+    void toMapCodecAsKey() {
+        Codec<Map<String, Integer>> codec = Codec.STRING.toMapCodecAsKey(Codec.INT);
+        CodecTester.test(codec, Map.of());
+        CodecTester.test(codec, Map.of("a", 1));
+        CodecTester.test(codec, Map.of("a", 1, "b", 2, "c", 3));
+    }
+
+    @Test
+    void toMapCodecAsValue() {
+        Codec<Map<Integer, String>> codec = Codec.STRING.toMapCodecAsValue(Codec.INT);
+        CodecTester.test(codec, Map.of());
+        CodecTester.test(codec, Map.of(1, "a"));
+        CodecTester.test(codec, Map.of(1, "a", 2, "b", 3, "c"));
     }
 }
