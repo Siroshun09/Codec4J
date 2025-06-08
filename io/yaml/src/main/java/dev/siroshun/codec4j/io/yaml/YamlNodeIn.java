@@ -157,38 +157,38 @@ class YamlNodeIn implements In {
 
     @Override
     public <R> Result<R, DecodeError> readList(R identity, BiFunction<R, ? super In, Result<?, ?>> operator) {
-        if (this.node instanceof SequenceNode sequenceNode) {
-            List<Node> nodes = sequenceNode.getValue();
-
-            for (Node node : nodes) {
-                Result<?, ?> result = operator.apply(identity, new YamlNodeIn(node, this.constructor));
-                if (result.isFailure()) {
-                    return DecodeError.iterationError(result.asFailure()).asFailure();
-                }
-            }
-
-            return Result.success(identity);
-        } else {
+        if (!(this.node instanceof SequenceNode sequenceNode)) {
             return DecodeError.typeMismatch(Type.LIST, this.getType()).asFailure();
         }
+
+        List<Node> nodes = sequenceNode.getValue();
+
+        for (Node node : nodes) {
+            Result<?, ?> result = operator.apply(identity, new YamlNodeIn(node, this.constructor));
+            if (result.isFailure()) {
+                return DecodeError.iterationError(result.asFailure()).asFailure();
+            }
+        }
+
+        return Result.success(identity);
     }
 
     @Override
     public <R> Result<R, DecodeError> readMap(R identity, BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
-        if (this.node instanceof MappingNode mappingNode) {
-            List<NodeTuple> tuples = mappingNode.getValue();
-
-            for (NodeTuple tuple : tuples) {
-                Result<?, ?> result = operator.apply(identity, new YamlTupleIn(tuple, this.constructor));
-                if (result.isFailure()) {
-                    return DecodeError.iterationError(result.asFailure()).asFailure();
-                }
-            }
-
-            return Result.success(identity);
-        } else {
+        if (!(this.node instanceof MappingNode mappingNode)) {
             return DecodeError.typeMismatch(Type.MAP, this.getType()).asFailure();
         }
+
+        List<NodeTuple> tuples = mappingNode.getValue();
+
+        for (NodeTuple tuple : tuples) {
+            Result<?, ?> result = operator.apply(identity, new YamlTupleIn(tuple, this.constructor));
+            if (result.isFailure()) {
+                return DecodeError.iterationError(result.asFailure()).asFailure();
+            }
+        }
+
+        return Result.success(identity);
     }
 
     private @Nullable Object constructObject() {
