@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.codec.collection;
+package dev.siroshun.codec4j.api.encoder.element;
 
 import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.EncodeError;
@@ -29,7 +29,7 @@ public interface ElementEncoder<E, T> extends Encoder<T> {
      */
     static <E, C extends Iterable<E>> @NotNull Encoder<C> create(@NotNull Encoder<E> elementEncoder) {
         Objects.requireNonNull(elementEncoder);
-        ElementEncoder.EncodeProcessor<E, C> processor = new ElementProcessors.IterableEncodeProcessor<>(elementEncoder);
+        ElementEncoder.EncodeProcessor<E, C> processor = new IterableEncodeProcessor<>(elementEncoder);
         return (ElementEncoder<E, C>) () -> processor;
     }
 

@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.codec.collection;
+package dev.siroshun.codec4j.api.decoder.entry;
 
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
@@ -58,7 +58,7 @@ public interface EntryDecoder<K, V, R> extends Decoder<R> {
         Objects.requireNonNull(valueDecoder);
         Objects.requireNonNull(factory);
         Objects.requireNonNull(finalizer);
-        EntryProcessors.MapEntryDecodeProcessor<K, V> processor = new EntryProcessors.MapEntryDecodeProcessor<>(keyDecoder, valueDecoder, factory, allowDuplicatedKey, finalizer);
+        MapEntryDecodeProcessor<K, V> processor = new MapEntryDecodeProcessor<>(keyDecoder, valueDecoder, factory, allowDuplicatedKey, finalizer);
         return (EntryDecoder<K, V, Map<K, V>>) () -> processor;
     }
 

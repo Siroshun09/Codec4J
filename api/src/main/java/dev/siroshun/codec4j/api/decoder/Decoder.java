@@ -1,7 +1,7 @@
 package dev.siroshun.codec4j.api.decoder;
 
-import dev.siroshun.codec4j.api.codec.collection.ElementDecoder;
-import dev.siroshun.codec4j.api.codec.collection.EntryDecoder;
+import dev.siroshun.codec4j.api.decoder.element.ElementDecoder;
+import dev.siroshun.codec4j.api.decoder.entry.EntryDecoder;
 import dev.siroshun.codec4j.api.decoder.object.FieldDecoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.In;

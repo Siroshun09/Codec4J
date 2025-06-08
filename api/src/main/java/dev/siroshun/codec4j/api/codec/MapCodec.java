@@ -1,6 +1,7 @@
-package dev.siroshun.codec4j.api.codec.collection;
+package dev.siroshun.codec4j.api.codec;
 
-import dev.siroshun.codec4j.api.codec.Codec;
+import dev.siroshun.codec4j.api.decoder.entry.EntryDecoder;
+import dev.siroshun.codec4j.api.encoder.entry.EntryEncoder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

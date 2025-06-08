@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.codec.collection;
+package dev.siroshun.codec4j.api.decoder.element;
 
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
@@ -31,7 +31,7 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
      */
     static <E> @NotNull Decoder<List<E>> list(@NotNull Decoder<E> elementDecoder) {
         Objects.requireNonNull(elementDecoder);
-        ElementDecoder.DecodeProcessor<E, List<E>> processor = new ElementProcessors.DecodeProcessorImpl<>(
+        ElementDecoder.DecodeProcessor<E, List<E>> processor = new DecodeProcessorImpl<>(
             elementDecoder,
             ArrayList::new,
             (list, element) -> {
@@ -65,7 +65,7 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
      * @return a {@link ElementDecoder} for decoding elements as a {@link Set}
      */
     static <E> @NotNull Decoder<Set<E>> set(@NotNull Decoder<E> elementDecoder, boolean allowDuplicates) {
-        ElementDecoder.DecodeProcessor<E, Set<E>> processor = new ElementProcessors.DecodeProcessorImpl<>(
+        ElementDecoder.DecodeProcessor<E, Set<E>> processor = new DecodeProcessorImpl<>(
             elementDecoder,
             HashSet::new,
             (set, element) -> {

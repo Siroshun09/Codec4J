@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.codec.collection;
+package dev.siroshun.codec4j.api.encoder.entry;
 
 import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.EncodeError;
@@ -32,7 +32,7 @@ public interface EntryEncoder<E, T> extends Encoder<T> {
     static <K, V> @NotNull Encoder<Map<K, V>> map(@NotNull Encoder<K> keyEncoder, @NotNull Encoder<V> valueEncoder) {
         Objects.requireNonNull(keyEncoder);
         Objects.requireNonNull(valueEncoder);
-        EntryProcessors.MapEntryEncodeProcessor<K, V> processor = new EntryProcessors.MapEntryEncodeProcessor<>(keyEncoder, valueEncoder);
+        MapEntryEncodeProcessor<K, V> processor = new MapEntryEncodeProcessor<>(keyEncoder, valueEncoder);
         return (EntryEncoder<Map.Entry<K, V>, Map<K, V>>) () -> processor;
     }
 
