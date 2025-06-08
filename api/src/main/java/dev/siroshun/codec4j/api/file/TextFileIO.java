@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -91,6 +93,29 @@ public interface TextFileIO {
                 return result.asFailure();
             }
             return Result.success(writer.toString());
+        } catch (IOException e) {
+            return EncodeError.fatalError(e).asFailure();
+        }
+    }
+
+    default <T> @NotNull Result<T, DecodeError> decodeBytes(@NotNull Decoder<? extends T> decoder, byte[] bytes) {
+        Objects.requireNonNull(decoder);
+        Objects.requireNonNull(bytes);
+        try (InputStream input = new ByteArrayInputStream(bytes)) {
+            return this.decodeFrom(input, decoder);
+        } catch (IOException e) {
+            return DecodeError.fatalError(e).asFailure();
+        }
+    }
+
+    default <T> @NotNull Result<byte[], EncodeError> encodeToBytes(@NotNull Encoder<? super T> encoder, @UnknownNullability T input) {
+        Objects.requireNonNull(encoder);
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            Result<Void, EncodeError> result = this.encodeTo(output, encoder, input);
+            if (result.isFailure()) {
+                return result.asFailure();
+            }
+            return Result.success(output.toByteArray());
         } catch (IOException e) {
             return EncodeError.fatalError(e).asFailure();
         }
