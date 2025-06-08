@@ -17,6 +17,7 @@ addProject("api")
 addProject("test-helper")
 
 sequenceOf(
+    "base64",
     "gson",
     "gzip",
     "memory",
