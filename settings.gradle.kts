@@ -18,6 +18,7 @@ addProject("test-helper")
 
 sequenceOf(
     "gson",
+    "gzip",
     "memory",
     "yaml"
 ).forEach {
