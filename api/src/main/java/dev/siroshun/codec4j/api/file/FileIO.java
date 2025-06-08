@@ -24,7 +24,7 @@ import java.util.Objects;
 
 public interface FileIO {
 
-    int DEFAULT_BUFFER_SIZE = 8192;
+    int DEFAULT_BUFFER_SIZE = 1 << 14;
 
     @Contract(value = " -> new", pure = true)
     static @NotNull OpenOption @NotNull [] readOpenOptions() {
