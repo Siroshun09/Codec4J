@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,12 +23,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public interface TextFileIO {
+public interface TextFileIO extends FileIO {
 
     <T> @NotNull Result<T, DecodeError> decodeFrom(@NotNull Reader reader, @NotNull Decoder<? extends T> decoder);
 
     <T> @NotNull Result<Void, EncodeError> encodeTo(@NotNull Writer writer, @NotNull Encoder<? super T> encoder, @UnknownNullability T input);
 
+    @Override
     default <T> @NotNull Result<T, DecodeError> decodeFrom(@NotNull Path filepath, @NotNull Decoder<? extends T> decoder) {
         Objects.requireNonNull(filepath);
         Objects.requireNonNull(decoder);
@@ -41,7 +40,8 @@ public interface TextFileIO {
         }
     }
 
-    default <T> @NotNull Result<Void, EncodeError> encodeTo(@NotNull Path filepath, Encoder<? super T> encoder, @UnknownNullability T input) {
+    @Override
+    default <T> @NotNull Result<Void, EncodeError> encodeTo(@NotNull Path filepath, @NotNull Encoder<? super T> encoder, @UnknownNullability T input) {
         Objects.requireNonNull(filepath);
         Objects.requireNonNull(encoder);
 
@@ -50,13 +50,14 @@ public interface TextFileIO {
             return result.asFailure();
         }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(filepath, StandardCharsets.UTF_8, DefaultOpenOptions.fileOpenOptions())) {
+        try (BufferedWriter writer = Files.newBufferedWriter(filepath, StandardCharsets.UTF_8, DefaultOpenOptions.WRITE_OPEN_OPTIONS)) {
             return this.encodeTo(writer, encoder, input);
         } catch (IOException e) {
             return EncodeError.fatalError(e).asFailure();
         }
     }
 
+    @Override
     default <T> @NotNull Result<T, DecodeError> decodeFrom(@NotNull InputStream input, @NotNull Decoder<? extends T> decoder) {
         Objects.requireNonNull(input);
         Objects.requireNonNull(decoder);
@@ -67,6 +68,7 @@ public interface TextFileIO {
         }
     }
 
+    @Override
     default <T> @NotNull Result<Void, EncodeError> encodeTo(@NotNull OutputStream output, @NotNull Encoder<? super T> encoder, @UnknownNullability T input) {
         Objects.requireNonNull(output);
         Objects.requireNonNull(encoder);
@@ -96,44 +98,5 @@ public interface TextFileIO {
         } catch (IOException e) {
             return EncodeError.fatalError(e).asFailure();
         }
-    }
-
-    default <T> @NotNull Result<T, DecodeError> decodeBytes(@NotNull Decoder<? extends T> decoder, byte[] bytes) {
-        Objects.requireNonNull(decoder);
-        Objects.requireNonNull(bytes);
-        try (InputStream input = new ByteArrayInputStream(bytes)) {
-            return this.decodeFrom(input, decoder);
-        } catch (IOException e) {
-            return DecodeError.fatalError(e).asFailure();
-        }
-    }
-
-    default <T> @NotNull Result<byte[], EncodeError> encodeToBytes(@NotNull Encoder<? super T> encoder, @UnknownNullability T input) {
-        Objects.requireNonNull(encoder);
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            Result<Void, EncodeError> result = this.encodeTo(output, encoder, input);
-            if (result.isFailure()) {
-                return result.asFailure();
-            }
-            return Result.success(output.toByteArray());
-        } catch (IOException e) {
-            return EncodeError.fatalError(e).asFailure();
-        }
-    }
-
-    default @NotNull Result<Void, EncodeError> createParentDirectory(@NotNull Path filepath) {
-        Objects.requireNonNull(filepath);
-
-        Path parent = filepath.getParent();
-
-        if (parent != null && !Files.isDirectory(parent)) {
-            try {
-                Files.createDirectories(parent);
-            } catch (IOException e) {
-                return EncodeError.fatalError(e).asFailure();
-            }
-        }
-
-        return Result.success();
     }
 }
