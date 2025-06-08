@@ -35,6 +35,26 @@ public sealed interface EncodeError permits EncodeError.Failure, EncodeError.Fat
     }
 
     /**
+     * Creates a {@link Failure} error with no additional information.
+     *
+     * @return a {@link Failure} error
+     */
+    static Failure encodeFailure() {
+        return new EncodeErrors.Failure("");
+    }
+
+    /**
+     * Creates a {@link Failure} with a message.
+     *
+     * @param message a message that is used in {@link Object#toString()} for printing debug logs
+     * @return a {@link Failure} error with a message
+     */
+    static Failure encodeFailure(String message) {
+        Objects.requireNonNull(message);
+        return new EncodeErrors.Failure(message);
+    }
+
+    /**
      * Converts this {@link EncodeError} to {@link Result.Failure}.
      *
      * @param <T> any type

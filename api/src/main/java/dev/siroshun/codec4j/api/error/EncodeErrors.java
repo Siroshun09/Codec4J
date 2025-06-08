@@ -11,4 +11,7 @@ final class EncodeErrors {
 
     record FatalError(Throwable cause) implements EncodeError.FatalError {
     }
+
+    record Failure(String message) implements EncodeError.Failure {
+    }
 }

@@ -28,4 +28,7 @@ final class DecodeErrors {
 
     record IgnorableError(DecodeError error) implements DecodeError.IgnorableError {
     }
+
+    record Failure(String message) implements DecodeError.Failure {
+    }
 }

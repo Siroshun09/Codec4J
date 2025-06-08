@@ -83,6 +83,26 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
     }
 
     /**
+     * Creates a {@link Failure} error with no additional information.
+     *
+     * @return a {@link Failure} error
+     */
+    static Failure decodeFailure() {
+        return new DecodeErrors.Failure("");
+    }
+
+    /**
+     * Creates a {@link Failure} error with a message.
+     *
+     * @param message a message that is used in {@link Object#toString()} for printing debug logs
+     * @return a {@link Failure} error with a message
+     */
+    static Failure decodeFailure(String message) {
+        Objects.requireNonNull(message);
+        return new DecodeErrors.Failure(message);
+    }
+
+    /**
      * Converts this {@link DecodeError} to {@link Result.Failure}.
      *
      * @param <T> any type
