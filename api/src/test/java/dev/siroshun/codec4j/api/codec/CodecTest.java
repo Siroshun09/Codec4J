@@ -101,12 +101,12 @@ class CodecTest {
     @Test
     void flatXmapFailure() {
         Codec<String> codec = Codec.STRING.flatXmap(
-            str -> EncodeError.encodeFailure("encode error").asFailure(),
-            str -> DecodeError.decodeFailure("decode error").asFailure()
+            str -> EncodeError.failure("encode error").asFailure(),
+            str -> DecodeError.failure("decode error").asFailure()
         );
-        ResultAssertions.assertFailure(codec.encode(Memory.out(), "test"), EncodeError.encodeFailure("encode error"));
+        ResultAssertions.assertFailure(codec.encode(Memory.out(), "test"), EncodeError.failure("encode error"));
         Memory memory = ResultAssertions.assertSuccess(Memory.out().writeString("TEST"));
-        ResultAssertions.assertFailure(codec.decode(memory), DecodeError.decodeFailure("decode error"));
+        ResultAssertions.assertFailure(codec.decode(memory), DecodeError.failure("decode error"));
     }
 
     @Test

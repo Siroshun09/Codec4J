@@ -87,7 +87,7 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
      *
      * @return a {@link Failure} error
      */
-    static Failure decodeFailure() {
+    static Failure failure() {
         return new DecodeErrors.Failure("");
     }
 
@@ -97,7 +97,7 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
      * @param message a message that is used in {@link Object#toString()} for printing debug logs
      * @return a {@link Failure} error with a message
      */
-    static Failure decodeFailure(String message) {
+    static Failure failure(String message) {
         Objects.requireNonNull(message);
         return new DecodeErrors.Failure(message);
     }

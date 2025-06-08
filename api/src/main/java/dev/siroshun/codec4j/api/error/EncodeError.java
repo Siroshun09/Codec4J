@@ -39,7 +39,7 @@ public sealed interface EncodeError permits EncodeError.Failure, EncodeError.Fat
      *
      * @return a {@link Failure} error
      */
-    static Failure encodeFailure() {
+    static Failure failure() {
         return new EncodeErrors.Failure("");
     }
 
@@ -49,7 +49,7 @@ public sealed interface EncodeError permits EncodeError.Failure, EncodeError.Fat
      * @param message a message that is used in {@link Object#toString()} for printing debug logs
      * @return a {@link Failure} error with a message
      */
-    static Failure encodeFailure(String message) {
+    static Failure failure(String message) {
         Objects.requireNonNull(message);
         return new EncodeErrors.Failure(message);
     }
