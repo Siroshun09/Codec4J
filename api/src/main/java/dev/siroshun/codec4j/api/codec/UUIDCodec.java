@@ -29,7 +29,7 @@ public final class UUIDCodec {
                 return new InvalidUUIDFormatError(str).asFailure();
             }
         }
-    );
+    ).named("UUIDStringCodec");
 
     /**
      * A {@link DecodeError.Failure} for {@link UUIDCodec#UUID_AS_STRING}.

@@ -26,7 +26,7 @@ public final class EnumCodec {
                     return new UnknownEnumNameDecodeError(enumClass, s).asFailure();
                 }
             }
-        );
+        ).named("EnumNameCodec[" + enumClass.getSimpleName() + "]");
     }
 
     /**
@@ -46,7 +46,7 @@ public final class EnumCodec {
                 }
                 return Result.success(es[ordinal]);
             }
-        );
+        ).named("EnumOrdinalCodec[" + enumClass.getSimpleName() + "]");
     }
 
     /**

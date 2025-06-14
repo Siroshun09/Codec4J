@@ -28,7 +28,7 @@ public final class MapCodec {
         return Codec.codec(
             EntryEncoder.map(keyCodec, valueCodec),
             EntryDecoder.map(keyCodec, valueCodec)
-        );
+        ).named("MapCodec[key=" + keyCodec + ",value=" + valueCodec + "]");
     }
 
     /**
@@ -50,7 +50,7 @@ public final class MapCodec {
         return Codec.codec(
             EntryEncoder.map(keyCodec, valueCodec),
             EntryDecoder.map(keyCodec, valueCodec, factory, allowDuplicatedKey, finalizer)
-        );
+        ).named("MapCodec[key=" + keyCodec + ",value=" + valueCodec + "]");
     }
 
     private MapCodec() {

@@ -24,7 +24,7 @@ public final class Base64Codec {
                 return new InvalidBase64Error(base64).asFailure();
             }
         }
-    );
+    ).named("Base64Codec");
 
     /**
      * A {@link DecodeError.Failure} for {@link Base64Codec#CODEC}.

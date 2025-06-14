@@ -23,7 +23,7 @@ public final class CollectionCodec {
      */
     public static <E> @NotNull Codec<List<E>> list(@NotNull Codec<E> elementCodec) {
         Objects.requireNonNull(elementCodec);
-        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.list(elementCodec));
+        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.list(elementCodec)).named("ListCodec[" + elementCodec + "]");
     }
 
     /**
@@ -37,7 +37,7 @@ public final class CollectionCodec {
      */
     public static <E> @NotNull Codec<Set<E>> set(@NotNull Codec<E> elementCodec) {
         Objects.requireNonNull(elementCodec);
-        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.set(elementCodec));
+        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.set(elementCodec)).named("SetCodec[" + elementCodec + "]");
     }
 
     /**
@@ -50,7 +50,7 @@ public final class CollectionCodec {
      */
     public static <E> @NotNull Codec<Set<E>> set(@NotNull Codec<E> elementCodec, boolean allowDuplicates) {
         Objects.requireNonNull(elementCodec);
-        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.set(elementCodec, allowDuplicates));
+        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.set(elementCodec, allowDuplicates)).named("SetCodec[" + elementCodec + "]");
     }
 
     /**
@@ -62,7 +62,7 @@ public final class CollectionCodec {
      */
     public static <E> @NotNull Codec<Collection<E>> collection(@NotNull Codec<E> elementCodec) {
         Objects.requireNonNull(elementCodec);
-        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.list(elementCodec));
+        return Codec.<Collection<E>>codec(ElementEncoder.create(elementCodec), ElementDecoder.list(elementCodec)).named("CollectionCodec[" + elementCodec + "]");
     }
 
     private CollectionCodec() {
