@@ -1,5 +1,6 @@
-package dev.siroshun.codec4j.testhelper;
+package dev.siroshun.codec4j.testhelper.source;
 
+import dev.siroshun.codec4j.api.codec.Codec;
 import dev.siroshun.codec4j.api.io.Type;
 import org.jetbrains.annotations.NotNullByDefault;
 
@@ -10,7 +11,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @NotNullByDefault
-public record ValueSource<T>(Type.Value<T> type, Supplier<Stream<T>> valuesSupplier) {
+public record ValueSource<T>(Type.Value<T> type, Supplier<Stream<T>> valuesSupplier) implements Source<T> {
 
     private static final List<ValueSource<?>> SOURCES = new ArrayList<>();
 
@@ -46,4 +47,8 @@ public record ValueSource<T>(Type.Value<T> type, Supplier<Stream<T>> valuesSuppl
         return this.valuesSupplier.get();
     }
 
+    @Override
+    public Codec<T> codec() {
+        return Codec.byValueType(this.type);
+    }
 }

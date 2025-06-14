@@ -5,7 +5,7 @@ import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.codec4j.io.Memory;
 import dev.siroshun.codec4j.testhelper.CodecTester;
-import dev.siroshun.codec4j.testhelper.ValueSource;
+import dev.siroshun.codec4j.testhelper.source.ValueSource;
 import dev.siroshun.jfun.result.Result;
 import dev.siroshun.jfun.result.assertion.ResultAssertions;
 import org.junit.jupiter.api.Assertions;
