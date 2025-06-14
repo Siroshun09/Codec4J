@@ -1,5 +1,6 @@
 package dev.siroshun.codec4j.io;
 
+import dev.siroshun.codec4j.api.codec.Codec;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.ElementAppender;
@@ -7,6 +8,7 @@ import dev.siroshun.codec4j.api.io.EntryAppender;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.codec4j.api.io.Type;
+import dev.siroshun.codec4j.testhelper.source.Source;
 import dev.siroshun.codec4j.testhelper.source.ValueSource;
 import dev.siroshun.jfun.result.Result;
 import dev.siroshun.jfun.result.assertion.ResultAssertions;
@@ -326,5 +328,28 @@ class MemoryTest {
             Map.entry(out -> out.createMap().inspect(appender -> appender.append(k -> k.writeString("a"), v -> v.writeString("b"))).map(EntryAppender::finish).unwrapOr(Result.failure()), "{a=b}"),
             Map.entry(out -> out.createMap().inspect(appender -> appender.append(k -> k.writeString("a"), v -> v.writeString("b"))).inspect(appender -> appender.append(k -> k.writeString("c"), v -> v.writeString("d"))).map(EntryAppender::finish).unwrapOr(Result.failure()), "{a=b, c=d}")
         ).entrySet().stream();
+    }
+
+    @ParameterizedTest
+    @MethodSource("sourceTestCases")
+    void testBySource(SourceTestCase<?> testCase) {
+        testCase.doTest();
+    }
+
+    private static Stream<SourceTestCase<?>> sourceTestCases() {
+        return Source.allSources().flatMap(SourceTestCase::createFromSource);
+    }
+
+    private record SourceTestCase<T>(Codec<T> codec, T value) {
+
+        private static <T> Stream<SourceTestCase<T>> createFromSource(Source<T> source) {
+            return source.values().map(value -> new SourceTestCase<>(source.codec(), value));
+        }
+
+        private void doTest() {
+            Memory encoded = ResultAssertions.assertSuccess(this.codec.encode(Memory.out(), this.value));
+            T decoded = ResultAssertions.assertSuccess(this.codec.decode(encoded));
+            Assertions.assertEquals(this.value, decoded);
+        }
     }
 }
