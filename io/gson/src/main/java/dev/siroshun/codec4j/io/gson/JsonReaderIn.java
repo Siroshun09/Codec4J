@@ -257,6 +257,17 @@ public class JsonReaderIn implements In, AutoCloseable {
     }
 
     @Override
+    public @NotNull Result<Void, DecodeError> skip() {
+        try {
+            this.reader.peek();
+            this.reader.skipValue();
+            return Result.success();
+        } catch (IOException e) {
+            return DecodeError.fatalError(e).asFailure();
+        }
+    }
+
+    @Override
     public void close() throws IOException {
         this.reader.close();
     }
@@ -351,6 +362,22 @@ public class JsonReaderIn implements In, AutoCloseable {
         @Override
         public @NotNull <R> Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
             return DecodeError.typeMismatch(Type.STRING, Type.STRING).asFailure();
+        }
+
+        @Override
+        public @NotNull Result<Void, DecodeError> skip() {
+            if (this.read) {
+                throw new IllegalStateException("Cannot read the key twice.");
+            }
+
+            try {
+                JsonReaderIn.this.reader.peek();
+                JsonReaderIn.this.reader.skipValue();
+                this.read = true;
+                return Result.success();
+            } catch (IOException e) {
+                return DecodeError.fatalError(e).asFailure();
+            }
         }
     }
 }

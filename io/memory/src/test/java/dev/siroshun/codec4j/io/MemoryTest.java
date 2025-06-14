@@ -234,6 +234,30 @@ class MemoryTest {
     }
 
     @ParameterizedTest
+    @MethodSource("testCasesForSkip")
+    void testSkip(Memory memory) {
+        ResultAssertions.assertSuccess(memory.skip());
+    }
+
+    private static Stream<Memory> testCasesForSkip() {
+        return Stream.of(
+            Memory.out().writeBoolean(true),
+            Memory.out().writeByte((byte) 1),
+            Memory.out().writeChar('a'),
+            Memory.out().writeDouble(3.14),
+            Memory.out().writeFloat(3.14f),
+            Memory.out().writeInt(1),
+            Memory.out().writeLong(1L),
+            Memory.out().writeShort((short) 1),
+            Memory.out().writeString("a"),
+            Memory.out().createList().map(ElementAppender::finish).unwrapOr(Result.failure()),
+            Memory.out().createList().inspect(appender -> appender.append(in -> in.writeString("a"))).map(ElementAppender::finish).unwrapOr(Result.failure()),
+            Memory.out().createMap().map(EntryAppender::finish).unwrapOr(Result.failure()),
+            Memory.out().createMap().inspect(appender -> appender.append(k -> k.writeString("a"), v -> v.writeString("b"))).map(EntryAppender::finish).unwrapOr(Result.failure())
+        ).map(Result::unwrap);
+    }
+
+    @ParameterizedTest
     @MethodSource("writersByType")
     void testType(Map.Entry<Type, Function<Out<Memory>, Result<Memory, EncodeError>>> testCase) {
         Memory memory = ResultAssertions.assertSuccess(testCase.getValue().apply(Memory.out()));

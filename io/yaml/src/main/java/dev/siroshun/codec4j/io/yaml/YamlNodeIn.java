@@ -5,6 +5,7 @@ import dev.siroshun.codec4j.api.io.EntryIn;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.nodes.AnchorNode;
@@ -194,6 +195,11 @@ class YamlNodeIn implements In {
         }
 
         return Result.success(identity);
+    }
+
+    @Override
+    public @NotNull Result<Void, DecodeError> skip() {
+        return Result.success();
     }
 
     private @Nullable Object constructObject() {

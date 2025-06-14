@@ -6,6 +6,7 @@ import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.function.BiFunction;
@@ -104,6 +105,11 @@ public final class Memory implements In {
         } else {
             return DecodeError.typeMismatch(Type.MAP, this.delegate.type()).asFailure();
         }
+    }
+
+    @Override
+    public @NotNull Result<Void, DecodeError> skip() {
+        return Result.success();
     }
 
     @Override

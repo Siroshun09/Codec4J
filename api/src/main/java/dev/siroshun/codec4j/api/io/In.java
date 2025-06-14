@@ -104,4 +104,11 @@ public interface In {
      * @return a result containing the constructed container, or a {@link DecodeError} if the operation failed
      */
     <R> @NotNull Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<?, ?>> operator);
+
+    /**
+     * Skips the current value.
+     *
+     * @return a result for skip operation
+     */
+    @NotNull Result<Void, DecodeError> skip();
 }
