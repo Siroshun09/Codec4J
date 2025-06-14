@@ -38,6 +38,11 @@ record FieldList1<T, F1>(FieldDecoder<F1> codec,
                 } else {
                     return result.asFailure();
                 }
+            } else {
+                Result<Void, DecodeError> skipResult = in.skip();
+                if (skipResult.isFailure()) {
+                    return skipResult.asFailure();
+                }
             }
             return Result.success();
         }

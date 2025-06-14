@@ -112,6 +112,11 @@ public final class ObjectDecoder<T> implements Decoder<T> {
                 if (result.isFailure()) {
                     return result.asFailure();
                 }
+            } else {
+                Result<Void, DecodeError> skipResult = in.skip();
+                if (skipResult.isFailure()) {
+                    return skipResult.asFailure();
+                }
             }
 
             return Result.success();
