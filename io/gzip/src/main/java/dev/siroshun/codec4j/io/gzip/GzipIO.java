@@ -39,7 +39,8 @@ public final class GzipIO implements FileIO {
     @Contract("_, _ -> new")
     public static GzipIO create(FileIO io, int compressionLevel) {
         Objects.requireNonNull(io);
-        if (compressionLevel < Deflater.NO_COMPRESSION || compressionLevel > Deflater.BEST_COMPRESSION) {
+        if (compressionLevel != Deflater.DEFAULT_COMPRESSION &&
+            compressionLevel < Deflater.NO_COMPRESSION || compressionLevel > Deflater.BEST_COMPRESSION) {
             throw new IllegalArgumentException("compressionLevel must be between " + Deflater.NO_COMPRESSION + " and " + Deflater.BEST_COMPRESSION);
         }
         return new GzipIO(io, compressionLevel);
