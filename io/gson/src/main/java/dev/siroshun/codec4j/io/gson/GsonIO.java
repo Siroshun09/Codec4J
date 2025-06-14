@@ -1,6 +1,7 @@
 package dev.siroshun.codec4j.io.gson;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
@@ -26,6 +27,11 @@ public final class GsonIO implements TextFileIO {
      * The default {@link GsonIO}.
      */
     public static final GsonIO DEFAULT = create(new Gson());
+
+    /**
+     * The pretty-printing {@link GsonIO}.
+     */
+    public static final GsonIO PRETTY_PRINTING = create(new GsonBuilder().setPrettyPrinting().create());
 
     /**
      * Creates a new {@link GsonIO} from the custom {@link Gson}.
