@@ -86,6 +86,11 @@ class YamlNodeIn implements In {
             return s.length() == 1 ?
                 Result.success(s.charAt(0)) :
                 DecodeError.invalidChar(s).asFailure();
+        } else if (this.node instanceof ScalarNode scalarNode) {
+            String value = scalarNode.getValue();
+            return value.length() == 1 ?
+                Result.success(value.charAt(0)) :
+                DecodeError.invalidChar(value).asFailure();
         }
         return DecodeError.typeMismatch(Type.CHAR, this.getType()).asFailure();
     }
@@ -104,7 +109,7 @@ class YamlNodeIn implements In {
         Object object = this.constructObject();
         if (object instanceof Number n) {
             double value = n.doubleValue();
-            return Float.MIN_VALUE <= value && value <= Float.MAX_VALUE ?
+            return -Float.MAX_VALUE <= value && value <= Float.MAX_VALUE ?
                 Result.success((float) value) :
                 DecodeError.invalidNumber(Type.FLOAT, value).asFailure();
         }
