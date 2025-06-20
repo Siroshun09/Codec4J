@@ -87,7 +87,7 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
     @NotNull ElementDecoder.DecodeProcessor<E, R> decodeProcessor();
 
     @Override
-    default @NotNull Result<R, DecodeError> decode(In in) {
+    default @NotNull Result<R, DecodeError> decode(@NotNull In in) {
         return in.readList(this.decodeProcessor().createIdentity(), (identity, e) -> {
             Result<E, DecodeError> decodeResult = this.decodeProcessor().decodeElement(e);
 
