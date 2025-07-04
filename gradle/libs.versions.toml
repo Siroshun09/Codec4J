@@ -6,7 +6,7 @@ jfun = "1.0.0-beta.3"
 snakeyaml = "2.4"
 
 # testing tool
-junit = "5.13.2"
+junit = "5.13.3"
 
 # plugins
 gradle-plugins = "1.2.1"
