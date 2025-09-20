@@ -7,13 +7,13 @@ import org.jetbrains.annotations.NotNullByDefault;
 import java.util.Base64;
 
 /**
- * A {@link Codec} for {@link byte[]}.
+ * A {@link Codec} for byte[].
  */
 @NotNullByDefault
 public final class Base64Codec {
 
     /**
-     * A {@link Codec} for {@link byte[]}, encoding as {@link String} using {@link Base64#getEncoder()} and decoding as {@link byte[]} using {@link Base64#getDecoder()}.
+     * A {@link Codec} for byte[] encoding as {@link String} using {@link Base64#getEncoder()} and decoding as byte[] using {@link Base64#getDecoder()}.
      */
     public static final Codec<byte[]> CODEC = Codec.STRING.flatXmap(
         bytes -> Result.success(Base64.getEncoder().encodeToString(bytes)),
