@@ -275,7 +275,7 @@ public class JsonReaderIn implements In, AutoCloseable {
     @Override
     public @NotNull Result<Void, DecodeError> skip() {
         try {
-            this.reader.peek();
+            JsonToken _ = this.reader.peek();
             this.reader.skipValue();
             return Result.success();
         } catch (IOException e) {
@@ -392,7 +392,7 @@ public class JsonReaderIn implements In, AutoCloseable {
             }
 
             try {
-                JsonReaderIn.this.reader.peek();
+                JsonToken _ = JsonReaderIn.this.reader.peek();
                 JsonReaderIn.this.reader.skipValue();
                 this.read = true;
                 return Result.success();

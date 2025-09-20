@@ -39,19 +39,19 @@ class YamlNodeIn implements In {
 
     private Type getType() {
         return switch (this.node) {
-            case MappingNode ignored -> Type.MAP;
-            case SequenceNode ignored -> Type.LIST;
-            case ScalarNode ignored -> {
+            case MappingNode _ -> Type.MAP;
+            case SequenceNode _ -> Type.LIST;
+            case ScalarNode _ -> {
                 Object object = this.constructObject();
                 yield switch (object) {
-                    case String ignored2 -> Type.STRING;
-                    case Boolean ignored2 -> Type.BOOLEAN;
-                    case Integer ignored2 -> Type.INT;
-                    case Long ignored2 -> Type.LONG;
-                    case Double ignored2 -> Type.DOUBLE;
-                    case Float ignored2 -> Type.FLOAT;
-                    case Byte ignored2 -> Type.BYTE;
-                    case Short ignored2 -> Type.SHORT;
+                    case String _ -> Type.STRING;
+                    case Boolean _ -> Type.BOOLEAN;
+                    case Integer _ -> Type.INT;
+                    case Long _ -> Type.LONG;
+                    case Double _ -> Type.DOUBLE;
+                    case Float _ -> Type.FLOAT;
+                    case Byte _ -> Type.BYTE;
+                    case Short _ -> Type.SHORT;
                     case null, default -> Type.UNKNOWN;
                 };
             }

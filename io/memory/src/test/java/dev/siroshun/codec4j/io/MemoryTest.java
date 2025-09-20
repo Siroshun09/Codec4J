@@ -128,7 +128,7 @@ class MemoryTest {
     @Test
     void testEmptyList() {
         Memory memory = ResultAssertions.assertSuccess(Memory.out().createList().map(ElementAppender::finish).unwrapOr(Result.failure()));
-        memory.readList(List.of(), (ignoredList, ignoredIn) -> Assertions.fail("Unexpected call"));
+        memory.readList(List.of(), (_, _) -> Assertions.fail("Unexpected call"));
     }
 
     @Test
@@ -158,7 +158,7 @@ class MemoryTest {
         ElementAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createList());
         var failure = new EncodeError.Failure() {
         };
-        var appendResult = appender.append(ignored -> failure.asFailure());
+        var appendResult = appender.append(_ -> failure.asFailure());
         ResultAssertions.assertFailure(appendResult, failure);
     }
 
@@ -166,14 +166,14 @@ class MemoryTest {
     void testListIterationError() {
         Memory memory = ResultAssertions.assertSuccess(Memory.out().createList().inspect(appender -> appender.append(o -> o.writeString("a"))).map(ElementAppender::finish).unwrapOr(Result.failure()));
         Result.Failure<?, ?> failure = Result.failure("list iteration error");
-        Result<?, DecodeError> result = memory.readList(List.of(), (ignoredList, ignoredIn) -> failure.asFailure());
+        Result<?, DecodeError> result = memory.readList(List.of(), (_, _) -> failure.asFailure());
         ResultAssertions.assertFailure(result, DecodeError.iterationError(failure));
     }
 
     @Test
     void testEmptyMap() {
         Memory memory = ResultAssertions.assertSuccess(Memory.out().createMap().map(EntryAppender::finish).unwrapOr(Result.failure()));
-        memory.readMap(Map.of(), (ignoredMap, ignoredIn) -> Assertions.fail("Unexpected call"));
+        memory.readMap(Map.of(), (_, _) -> Assertions.fail("Unexpected call"));
     }
 
     @Test
@@ -212,7 +212,7 @@ class MemoryTest {
         EntryAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createMap());
         var failure = new EncodeError.Failure() {
         };
-        var appendResult = appender.append(ignoredKey -> failure.asFailure(), ignoredValue -> Assertions.fail("Unexpected call"));
+        var appendResult = appender.append(_ -> failure.asFailure(), _ -> Assertions.fail("Unexpected call"));
         ResultAssertions.assertFailure(appendResult, failure);
     }
 
@@ -221,7 +221,7 @@ class MemoryTest {
         EntryAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createMap());
         var failure = new EncodeError.Failure() {
         };
-        var appendResult = appender.append(ignoredKey -> Result.success(), ignoredValue -> failure.asFailure());
+        var appendResult = appender.append(_ -> Result.success(), _ -> failure.asFailure());
         ResultAssertions.assertFailure(appendResult, failure);
     }
 
@@ -229,7 +229,7 @@ class MemoryTest {
     void testMapIterationError() {
         Memory memory = ResultAssertions.assertSuccess(Memory.out().createMap().inspect(appender -> appender.append(k -> k.writeInt(1), v -> v.writeInt(2))).map(EntryAppender::finish).unwrapOr(Result.failure()));
         Result.Failure<?, ?> failure = Result.failure("map iteration error");
-        Result<?, DecodeError> result = memory.readMap(Map.of(), (ignoredMap, ignoredIn) -> failure.asFailure());
+        Result<?, DecodeError> result = memory.readMap(Map.of(), (_, _) -> failure.asFailure());
         ResultAssertions.assertFailure(result, DecodeError.iterationError(failure));
     }
 
@@ -296,20 +296,20 @@ class MemoryTest {
 
     private static Result<?, DecodeError> readAs(Type type, In in) {
         return switch (type) {
-            case Type.BooleanValue ignored -> in.readAsBoolean();
-            case Type.ByteValue ignored -> in.readAsByte();
-            case Type.CharValue ignored -> in.readAsChar();
-            case Type.DoubleValue ignored -> in.readAsDouble();
-            case Type.FloatValue ignored -> in.readAsFloat();
-            case Type.IntValue ignored -> in.readAsInt();
-            case Type.LongValue ignored -> in.readAsLong();
-            case Type.ShortValue ignored -> in.readAsShort();
-            case Type.StringValue ignored -> in.readAsString();
-            case Type.ListType ignored -> in.readList(
+            case Type.BooleanValue _ -> in.readAsBoolean();
+            case Type.ByteValue _ -> in.readAsByte();
+            case Type.CharValue _ -> in.readAsChar();
+            case Type.DoubleValue _ -> in.readAsDouble();
+            case Type.FloatValue _ -> in.readAsFloat();
+            case Type.IntValue _ -> in.readAsInt();
+            case Type.LongValue _ -> in.readAsLong();
+            case Type.ShortValue _ -> in.readAsShort();
+            case Type.StringValue _ -> in.readAsString();
+            case Type.ListType _ -> in.readList(
                 new ArrayList<>(),
                 (list, elementIn) -> readAs(elementIn.type().unwrapOr(Type.UNKNOWN), elementIn).map(list::add)
             );
-            case Type.MapType ignored -> in.readMap(
+            case Type.MapType _ -> in.readMap(
                 new LinkedHashMap<>(),
                 (map, entryIn) -> {
                     var key = readAs(entryIn.keyIn().type().unwrapOr(Type.UNKNOWN), entryIn.keyIn());
@@ -321,7 +321,7 @@ class MemoryTest {
                     return Result.success();
                 }
             );
-            case Type.Unknown ignored -> Result.failure();
+            case Type.Unknown _ -> Result.failure();
         };
     }
 

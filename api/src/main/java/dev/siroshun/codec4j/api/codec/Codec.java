@@ -225,15 +225,15 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
     static <T> @NotNull Codec<T> byValueType(@NotNull Type.Value<T> type) {
         Objects.requireNonNull(type);
         return (Codec<T>) switch (type) {
-            case Type.BooleanValue ignored -> BOOLEAN;
-            case Type.ByteValue ignored -> BYTE;
-            case Type.CharValue ignored -> CHAR;
-            case Type.DoubleValue ignored -> DOUBLE;
-            case Type.FloatValue ignored -> FLOAT;
-            case Type.IntValue ignored -> INT;
-            case Type.LongValue ignored -> LONG;
-            case Type.ShortValue ignored -> SHORT;
-            case Type.StringValue ignored -> STRING;
+            case Type.BooleanValue _ -> BOOLEAN;
+            case Type.ByteValue _ -> BYTE;
+            case Type.CharValue _ -> CHAR;
+            case Type.DoubleValue _ -> DOUBLE;
+            case Type.FloatValue _ -> FLOAT;
+            case Type.IntValue _ -> INT;
+            case Type.LongValue _ -> LONG;
+            case Type.ShortValue _ -> SHORT;
+            case Type.StringValue _ -> STRING;
         };
     }
 }
