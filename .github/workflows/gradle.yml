@@ -4,9 +4,9 @@ permissions:
   checks: write
 
 jobs:
-  build-java-21:
+  build-java-25:
     uses: Siroshun09/gh-actions-workflows/.github/workflows/gradle.yml@v1
     with:
-      java-version: '21'
+      java-version: '25'
       upload-artifacts: false
       upload-test-results: true
