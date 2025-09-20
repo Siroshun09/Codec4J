@@ -1,6 +1,7 @@
 package dev.siroshun.codec4j.io;
 
 import dev.siroshun.codec4j.api.error.DecodeError;
+import dev.siroshun.codec4j.api.io.ElementReader;
 import dev.siroshun.codec4j.api.io.EntryIn;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
@@ -87,6 +88,15 @@ public final class Memory implements In {
         return this.delegate instanceof MemoryValue value ?
             reader.apply(value) :
             DecodeError.typeMismatch(type, this.delegate.type()).asFailure();
+    }
+
+    @Override
+    public Result<ElementReader<? extends In>, DecodeError> readList() {
+        if (this.delegate instanceof MemoryLinkedList list) {
+            return Result.success(list.newReader());
+        } else {
+            return DecodeError.typeMismatch(Type.LIST, this.delegate.type()).asFailure();
+        }
     }
 
     @Override

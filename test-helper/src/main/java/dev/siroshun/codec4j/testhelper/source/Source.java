@@ -15,6 +15,8 @@ public interface Source<T> {
             downstream.accept(source);
             downstream.accept(ListSource.fromValueSource(source));
             ListSource.fromValueSource(source).toNestedListSources().forEach(downstream);
+            downstream.accept(ListSource.fromValueSourceForElementReader(source));
+            ListSource.fromValueSourceForElementReader(source).toNestedListSources().forEach(downstream);
             downstream.accept(MapSource.fromSourceWithStringKey(source));
             downstream.accept(MapSource.fromSourceWithStringKey(MapSource.fromSourceWithStringKey(source)));
         });

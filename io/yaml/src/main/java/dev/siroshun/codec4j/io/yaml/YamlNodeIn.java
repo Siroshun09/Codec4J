@@ -1,6 +1,7 @@
 package dev.siroshun.codec4j.io.yaml;
 
 import dev.siroshun.codec4j.api.error.DecodeError;
+import dev.siroshun.codec4j.api.io.ElementReader;
 import dev.siroshun.codec4j.api.io.EntryIn;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Type;
@@ -15,6 +16,7 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -162,6 +164,15 @@ class YamlNodeIn implements In {
     }
 
     @Override
+    public Result<ElementReader<? extends In>, DecodeError> readList() {
+        if (!(this.node instanceof SequenceNode sequenceNode)) {
+            return DecodeError.typeMismatch(Type.LIST, this.getType()).asFailure();
+        }
+
+        return Result.success(new YamlElementReader(sequenceNode.getValue().iterator(), this.constructor));
+    }
+
+    @Override
     public <R> Result<R, DecodeError> readList(R identity, BiFunction<R, ? super In, Result<?, ?>> operator) {
         if (!(this.node instanceof SequenceNode sequenceNode)) {
             return DecodeError.typeMismatch(Type.LIST, this.getType()).asFailure();
@@ -218,6 +229,28 @@ class YamlNodeIn implements In {
         @Override
         public In valueIn() {
             return new YamlNodeIn(this.tuple.getValueNode(), this.constructor);
+        }
+    }
+
+    private record YamlElementReader(Iterator<Node> iterator, ObjectConstructor constructor) implements ElementReader<In> {
+
+        @Override
+        public boolean hasNext() {
+            return this.iterator.hasNext();
+        }
+
+        @Override
+        public @NotNull Result<In, DecodeError> next() {
+            if (this.hasNext()) {
+                return Result.success(new YamlNodeIn(this.iterator.next(), this.constructor));
+            } else {
+                return DecodeError.noElementError().asFailure();
+            }
+        }
+
+        @Override
+        public @NotNull Result<Void, DecodeError> finish() {
+            return Result.success();
         }
     }
 }

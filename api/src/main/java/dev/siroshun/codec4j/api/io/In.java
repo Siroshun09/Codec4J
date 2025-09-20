@@ -86,6 +86,13 @@ public interface In {
     @NotNull Result<String, DecodeError> readAsString();
 
     /**
+     * Reads the current value as a list.
+     *
+     * @return a result containing an {@link ElementReader} for reading the list elements, or a {@link DecodeError} if the operation failed
+     */
+    @NotNull Result<ElementReader<? extends In>, DecodeError> readList();
+
+    /**
      * Reads the current value as a list, using the provided identity object and operator.
      *
      * @param <R>      the type of the result container

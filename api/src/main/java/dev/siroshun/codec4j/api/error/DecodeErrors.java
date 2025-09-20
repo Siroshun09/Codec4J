@@ -23,6 +23,9 @@ final class DecodeErrors {
     record IterationError(Result.Failure<?, ?> cause) implements DecodeError.IterationError {
     }
 
+    record NoElementError() implements DecodeError.NoElementError {
+    }
+
     record FatalError(Throwable cause) implements DecodeError.FatalError {
     }
 

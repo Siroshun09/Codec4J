@@ -10,7 +10,7 @@ import java.util.Objects;
  * An interface to indicate errors when decoding.
  */
 @NotNullByDefault
-public sealed interface DecodeError permits DecodeError.Failure, DecodeError.FatalError, DecodeError.IgnorableError, DecodeError.InvalidChar, DecodeError.InvalidNumber, DecodeError.InvalidNumberFormat, DecodeError.IterationError, DecodeError.TypeMismatch {
+public sealed interface DecodeError permits DecodeError.Failure, DecodeError.FatalError, DecodeError.IgnorableError, DecodeError.InvalidChar, DecodeError.InvalidNumber, DecodeError.InvalidNumberFormat, DecodeError.IterationError, DecodeError.NoElementError, DecodeError.TypeMismatch {
 
     /**
      * Creates a {@link DecodeError} when the type is different from the expected type.
@@ -69,6 +69,15 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
     static IterationError iterationError(Result.Failure<?, ?> cause) {
         Objects.requireNonNull(cause);
         return new DecodeErrors.IterationError(cause);
+    }
+
+    /**
+     * Creates a {@link DecodeError} when there is no element.
+     *
+     * @return a new {@link DecodeError}
+     */
+    static NoElementError noElementError() {
+        return new DecodeErrors.NoElementError();
     }
 
     /**
@@ -205,6 +214,12 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
          * @return a {@link Result.Failure} that is returned when iterating elements
          */
         Result.Failure<?, ?> cause();
+    }
+
+    /**
+     * An interface that indicates a {@link DecodeError} when there is no element.
+     */
+    sealed interface NoElementError extends DecodeError permits DecodeErrors.NoElementError {
     }
 
     /**
