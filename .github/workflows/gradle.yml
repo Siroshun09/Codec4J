@@ -10,3 +10,9 @@ jobs:
       java-version: '21'
       upload-artifacts: false
       upload-test-results: true
+  build-java-25:
+    uses: Siroshun09/gh-actions-workflows/.github/workflows/gradle.yml@v1
+    with:
+      java-version: '25'
+      upload-artifacts: false
+      upload-test-results: true
