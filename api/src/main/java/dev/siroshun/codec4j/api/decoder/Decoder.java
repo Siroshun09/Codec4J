@@ -2,19 +2,16 @@ package dev.siroshun.codec4j.api.decoder;
 
 import dev.siroshun.codec4j.api.decoder.element.ElementDecoder;
 import dev.siroshun.codec4j.api.decoder.entry.EntryDecoder;
-import dev.siroshun.codec4j.api.decoder.object.FieldDecoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * An interface for decoding data from an {@link In}.
@@ -75,18 +72,6 @@ public interface Decoder<T> {
     default @NotNull Decoder<T> catchError(@NotNull Function<? super DecodeError, Result<T, DecodeError>> onError) {
         Objects.requireNonNull(onError);
         return in -> Decoder.this.decode(in).flatMapError(onError);
-    }
-
-    default @NotNull FieldDecoder<T> toRequiredFieldDecoder(@NotNull String fieldName) {
-        return FieldDecoder.required(fieldName, this);
-    }
-
-    default @NotNull FieldDecoder<T> toOptionalFieldDecoder(@NotNull String fieldName, @UnknownNullability T defaultValue) {
-        return FieldDecoder.optional(fieldName, this, defaultValue);
-    }
-
-    default @NotNull FieldDecoder<T> toSupplyingFieldDecoder(@NotNull String fieldName, @NotNull Supplier<T> defaultValueSupplier) {
-        return FieldDecoder.supplying(fieldName, this, defaultValueSupplier);
     }
 
     /**

@@ -2,19 +2,15 @@ package dev.siroshun.codec4j.api.encoder;
 
 import dev.siroshun.codec4j.api.encoder.element.ElementEncoder;
 import dev.siroshun.codec4j.api.encoder.entry.EntryEncoder;
-import dev.siroshun.codec4j.api.encoder.object.FieldEncoder;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.jfun.result.Result;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * An interface for encoding data to an {@link Out}.
@@ -65,16 +61,6 @@ public interface Encoder<T> {
                 return mapper.apply(input).flatMap(t -> Encoder.this.encode(out, t));
             }
         };
-    }
-
-    @Contract("_, _ -> new")
-    default <O> @NotNull FieldEncoder<O> toFieldEncoder(@NotNull String fieldName, @NotNull Function<O, T> getter) {
-        return FieldEncoder.create(fieldName, this, getter, null);
-    }
-
-    @Contract("_, _, _ -> new")
-    default <O> @NotNull FieldEncoder<O> toFieldEncoder(@NotNull String fieldName, @NotNull Function<O, T> getter, @Nullable Predicate<O> canOmit) {
-        return FieldEncoder.create(fieldName, this, getter, canOmit);
     }
 
     /**

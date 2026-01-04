@@ -1,8 +1,6 @@
 package dev.siroshun.codec4j.api.codec;
 
 import dev.siroshun.codec4j.api.encoder.Encoder;
-import dev.siroshun.codec4j.api.codec.object.FieldCodec;
-import dev.siroshun.codec4j.api.codec.object.FieldCodecBuilder;
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
@@ -139,16 +137,6 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
      */
     default <K> @NotNull Codec<Map<K, T>> toMapCodecAsValue(@NotNull Codec<K> keyCodec) {
         return MapCodec.map(keyCodec, this);
-    }
-
-    /**
-     * Creates a new {@link FieldCodecBuilder} for {@link T}.
-     *
-     * @param fieldName the name of the field
-     * @return a new {@link FieldCodec} for {@link T}
-     */
-    default @NotNull FieldCodecBuilder<T> toFieldCodec(@NotNull String fieldName) {
-        return FieldCodec.builder(fieldName, this);
     }
 
     /**
