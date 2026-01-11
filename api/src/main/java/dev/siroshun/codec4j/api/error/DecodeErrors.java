@@ -4,6 +4,8 @@ import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNullByDefault;
 
+import java.util.OptionalInt;
+
 @NotNullByDefault
 final class DecodeErrors {
 
@@ -23,7 +25,7 @@ final class DecodeErrors {
     record IterationError(Result.Failure<?, ?> cause) implements DecodeError.IterationError {
     }
 
-    record NoElementError() implements DecodeError.NoElementError {
+    record NoElementError(OptionalInt index) implements DecodeError.NoElementError {
     }
 
     record FatalError(Throwable cause) implements DecodeError.FatalError {

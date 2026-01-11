@@ -5,6 +5,7 @@ import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.Objects;
+import java.util.OptionalInt;
 
 /**
  * An interface to indicate errors when decoding.
@@ -77,7 +78,16 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
      * @return a new {@link DecodeError}
      */
     static NoElementError noElementError() {
-        return new DecodeErrors.NoElementError();
+        return new DecodeErrors.NoElementError(OptionalInt.empty());
+    }
+
+    /**
+     * Creates a {@link DecodeError} when there is no element.
+     *
+     * @return a new {@link DecodeError}
+     */
+    static NoElementError noElementError(int index) {
+        return new DecodeErrors.NoElementError(OptionalInt.of(index));
     }
 
     /**
@@ -220,6 +230,16 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
      * An interface that indicates a {@link DecodeError} when there is no element.
      */
     sealed interface NoElementError extends DecodeError permits DecodeErrors.NoElementError {
+
+        /**
+         * Gets an index of the element.
+         * <p>
+         * If this error does not have an index, returns {@link OptionalInt#empty()}.
+         *
+         * @return an index of the element
+         */
+        OptionalInt index();
+
     }
 
     /**
