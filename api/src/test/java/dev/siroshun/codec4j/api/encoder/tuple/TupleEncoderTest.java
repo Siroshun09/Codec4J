@@ -1,6 +1,7 @@
 package dev.siroshun.codec4j.api.encoder.tuple;
 
 import dev.siroshun.codec4j.api.codec.Codec;
+import dev.siroshun.codec4j.api.codec.ListCodec;
 import dev.siroshun.codec4j.api.codec.MapCodec;
 import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
@@ -209,7 +210,7 @@ class TupleEncoderTest {
                     TupleValueEncoder.create(Codec.DOUBLE, TestDataRecord::doubleField),
                     TupleValueEncoder.create(Codec.FLOAT, TestDataRecord::floatField),
                     TupleValueEncoder.create(Codec.CHAR, TestDataRecord::charField),
-                    TupleValueEncoder.create(Codec.STRING.toListCodec(), TestDataRecord::listField)
+                    TupleValueEncoder.create(ListCodec.create(Codec.STRING), TestDataRecord::listField)
                 ),
                 encoded -> {
                     assertListElement(encoded, In::readAsString, TestDataRecord.INSTANCE.stringField());
@@ -240,8 +241,8 @@ class TupleEncoderTest {
                         TupleValueEncoder.create(Codec.DOUBLE, TestDataRecord::doubleField),
                         TupleValueEncoder.create(Codec.FLOAT, TestDataRecord::floatField),
                         TupleValueEncoder.create(Codec.CHAR, TestDataRecord::charField),
-                        TupleValueEncoder.create(Codec.STRING.toListCodec(), TestDataRecord::listField),
-                        TupleValueEncoder.create(MapCodec.map(Codec.STRING, Codec.INT), TestDataRecord::mapField)
+                        TupleValueEncoder.create(ListCodec.create(Codec.STRING), TestDataRecord::listField),
+                        TupleValueEncoder.create(MapCodec.create(Codec.STRING, Codec.INT), TestDataRecord::mapField)
                     )
                 ),
                 encoded -> {

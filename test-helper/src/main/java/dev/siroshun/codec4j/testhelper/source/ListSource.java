@@ -1,6 +1,7 @@
 package dev.siroshun.codec4j.testhelper.source;
 
 import dev.siroshun.codec4j.api.codec.Codec;
+import dev.siroshun.codec4j.api.codec.ListCodec;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.ElementReader;
@@ -20,7 +21,7 @@ public record ListSource<E>(Supplier<Stream<E>> valueStreamSupplier, Codec<List<
     public static <E> ListSource<E> fromValueSource(ValueSource<E> source) {
         return new ListSource<>(
             source::values,
-            Codec.byValueType(source.type()).toListCodec()
+            ListCodec.create(Codec.byValueType(source.type()))
         );
     }
 
@@ -63,7 +64,7 @@ public record ListSource<E>(Supplier<Stream<E>> valueStreamSupplier, Codec<List<
         return this.allNestedListCase()
             .map(list -> new ListSource<>(
                 list::stream,
-                this.codec.toListCodec()
+                ListCodec.create(this.codec)
             ));
     }
 
@@ -102,7 +103,7 @@ public record ListSource<E>(Supplier<Stream<E>> valueStreamSupplier, Codec<List<
 
         @Override
         public @NotNull <O> Result<O, EncodeError> encode(@NotNull Out<O> out, @UnknownNullability List<E> input) {
-            return this.elementCodec.toListCodec().encode(out, input);
+            return ListCodec.create(this.elementCodec).encode(out, input);
         }
     }
 }

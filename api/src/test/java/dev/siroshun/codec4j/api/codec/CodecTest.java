@@ -13,10 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 class CodecTest {
@@ -107,45 +103,5 @@ class CodecTest {
         ResultAssertions.assertFailure(codec.encode(Memory.out(), "test"), EncodeError.failure("encode error"));
         Memory memory = ResultAssertions.assertSuccess(Memory.out().writeString("TEST"));
         ResultAssertions.assertFailure(codec.decode(memory), DecodeError.failure("decode error"));
-    }
-
-    @Test
-    void toListCodec() {
-        Codec<List<String>> codec = Codec.STRING.toListCodec();
-        CodecTester.test(codec, List.of());
-        CodecTester.test(codec, List.of("a"));
-        CodecTester.test(codec, List.of("a", "b", "c"));
-    }
-
-    @Test
-    void toSetCodec() {
-        Codec<Set<String>> codec = Codec.STRING.toSetCodec();
-        CodecTester.test(codec, Set.of());
-        CodecTester.test(codec, Set.of("a"));
-        CodecTester.test(codec, Set.of("a", "b", "c"));
-    }
-
-    @Test
-    void toCollectionCodec() {
-        Codec<Collection<String>> codec = Codec.STRING.toCollectionCodec();
-        CodecTester.test(codec, List.of());
-        CodecTester.test(codec, List.of("a"));
-        CodecTester.test(codec, List.of("a", "b", "c"));
-    }
-
-    @Test
-    void toMapCodecAsKey() {
-        Codec<Map<String, Integer>> codec = Codec.STRING.toMapCodecAsKey(Codec.INT);
-        CodecTester.test(codec, Map.of());
-        CodecTester.test(codec, Map.of("a", 1));
-        CodecTester.test(codec, Map.of("a", 1, "b", 2, "c", 3));
-    }
-
-    @Test
-    void toMapCodecAsValue() {
-        Codec<Map<Integer, String>> codec = Codec.STRING.toMapCodecAsValue(Codec.INT);
-        CodecTester.test(codec, Map.of());
-        CodecTester.test(codec, Map.of(1, "a"));
-        CodecTester.test(codec, Map.of(1, "a", 2, "b", 3, "c"));
     }
 }

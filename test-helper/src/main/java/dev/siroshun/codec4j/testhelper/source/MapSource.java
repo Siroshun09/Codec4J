@@ -1,6 +1,7 @@
 package dev.siroshun.codec4j.testhelper.source;
 
 import dev.siroshun.codec4j.api.codec.Codec;
+import dev.siroshun.codec4j.api.codec.MapCodec;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -12,7 +13,7 @@ public record MapSource<K, V>(Supplier<Stream<Map.Entry<K, V>>> entryStreamSuppl
     public static <V> MapSource<String, V> fromSourceWithStringKey(Source<V> source) {
         return new MapSource<>(
             () -> source.values().map(value -> Map.entry(String.valueOf(value), value)),
-            source.codec().toMapCodecAsValue(Codec.STRING)
+            MapCodec.create(Codec.STRING, source.codec())
         );
     }
 

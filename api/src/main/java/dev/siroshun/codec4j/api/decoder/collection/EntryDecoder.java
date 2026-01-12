@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.decoder.entry;
+package dev.siroshun.codec4j.api.decoder.collection;
 
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
@@ -6,12 +6,6 @@ import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 /**
  * A {@link Decoder} for decoding entries from an {@link In#readMap(Object, java.util.function.BiFunction)}
@@ -21,46 +15,6 @@ import java.util.function.UnaryOperator;
  * @param <R> the type of the source collection to decode
  */
 public interface EntryDecoder<K, V, R> extends Decoder<R> {
-
-    /**
-     * Creates a {@link EntryDecoder} for decoding entries as a {@link Map}.
-     * <p>
-     * This decoder does not allow duplicate keys.
-     *
-     * @param keyDecoder   the {@link Decoder} for decoding keys
-     * @param valueDecoder the {@link Decoder} for decoding values
-     * @param <K>          the type of the key
-     * @param <V>          the type of the value
-     * @return a {@link EntryDecoder} for decoding entries as a {@link Map}
-     */
-    static <K, V> @NotNull Decoder<Map<K, V>> map(@NotNull Decoder<K> keyDecoder, @NotNull Decoder<V> valueDecoder) {
-        Objects.requireNonNull(keyDecoder);
-        Objects.requireNonNull(valueDecoder);
-        return map(keyDecoder, valueDecoder, HashMap::new, false, UnaryOperator.identity());
-    }
-
-    /**
-     * Creates a {@link EntryDecoder} for decoding entries as a {@link Map}.
-     *
-     * @param keyDecoder         the {@link Decoder} for decoding keys
-     * @param valueDecoder       the {@link Decoder} for decoding values
-     * @param factory            the factory for creating a {@link Map}
-     * @param allowDuplicatedKey whether to allow duplicate keys
-     * @param finalizer          the finalizer for the {@link Map}
-     * @param <K>                the type of the key
-     * @param <V>                the type of the value
-     * @return a {@link EntryDecoder} for decoding entries as a {@link Map}
-     */
-    static <K, V> @NotNull Decoder<Map<K, V>> map(@NotNull Decoder<K> keyDecoder, @NotNull Decoder<V> valueDecoder,
-                                                  @NotNull Supplier<Map<K, V>> factory, boolean allowDuplicatedKey,
-                                                  @NotNull UnaryOperator<Map<K, V>> finalizer) {
-        Objects.requireNonNull(keyDecoder);
-        Objects.requireNonNull(valueDecoder);
-        Objects.requireNonNull(factory);
-        Objects.requireNonNull(finalizer);
-        MapEntryDecodeProcessor<K, V> processor = new MapEntryDecodeProcessor<>(keyDecoder, valueDecoder, factory, allowDuplicatedKey, finalizer);
-        return (EntryDecoder<K, V, Map<K, V>>) () -> processor;
-    }
 
     /**
      * Returns the {@link EntryDecoder.DecodeProcessor} for decoding entries and collect them.

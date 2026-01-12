@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.decoder.element;
+package dev.siroshun.codec4j.api.decoder.collection;
 
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
@@ -7,13 +7,6 @@ import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.UnaryOperator;
-
 /**
  * A {@link Decoder} for decoding elements from an {@link In#readList(Object, java.util.function.BiFunction)}.
  *
@@ -21,63 +14,6 @@ import java.util.function.UnaryOperator;
  * @param <R> the type of the result
  */
 public interface ElementDecoder<E, R> extends Decoder<R> {
-
-    /**
-     * Creates a {@link ElementDecoder} for decoding elements as a {@link List}.
-     *
-     * @param elementDecoder the {@link Decoder} for decoding elements
-     * @param <E>            the type of the element
-     * @return a {@link ElementDecoder} for decoding elements as a {@link List}
-     */
-    static <E> @NotNull Decoder<List<E>> list(@NotNull Decoder<E> elementDecoder) {
-        Objects.requireNonNull(elementDecoder);
-        ElementDecoder.DecodeProcessor<E, List<E>> processor = new DecodeProcessorImpl<>(
-            elementDecoder,
-            ArrayList::new,
-            (list, element) -> {
-                list.add(element);
-                return Result.success();
-            },
-            UnaryOperator.identity()
-        );
-        return (ElementDecoder<E, List<E>>) () -> processor;
-    }
-
-    /**
-     * Creates a {@link ElementDecoder} for decoding elements as a {@link Set}.
-     * <p>
-     * This decoder does not allow duplicate elements.
-     *
-     * @param elementDecoder the {@link Decoder} for decoding elements
-     * @param <E>            the type of the element
-     * @return a {@link ElementDecoder} for decoding elements as a {@link Set}
-     */
-    static <E> @NotNull Decoder<Set<E>> set(@NotNull Decoder<E> elementDecoder) {
-        return set(elementDecoder, false);
-    }
-
-    /**
-     * Creates a {@link ElementDecoder} for decoding elements as a {@link Set}.
-     *
-     * @param elementDecoder  the {@link Decoder} for decoding elements
-     * @param allowDuplicates whether to allow duplicate elements
-     * @param <E>             the type of the element
-     * @return a {@link ElementDecoder} for decoding elements as a {@link Set}
-     */
-    static <E> @NotNull Decoder<Set<E>> set(@NotNull Decoder<E> elementDecoder, boolean allowDuplicates) {
-        ElementDecoder.DecodeProcessor<E, Set<E>> processor = new DecodeProcessorImpl<>(
-            elementDecoder,
-            HashSet::new,
-            (set, element) -> {
-                if (!set.add(element) && !allowDuplicates) {
-                    return new DuplicatedElementError(element).asFailure();
-                }
-                return Result.success();
-            },
-            UnaryOperator.identity()
-        );
-        return (ElementDecoder<E, Set<E>>) () -> processor;
-    }
 
     /**
      * Returns the {@link ElementDecoder.DecodeProcessor} for decoding elements and collect them.
