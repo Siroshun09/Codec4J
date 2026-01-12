@@ -1,14 +1,11 @@
 package dev.siroshun.codec4j.api.encoder;
 
-import dev.siroshun.codec4j.api.encoder.element.ElementEncoder;
-import dev.siroshun.codec4j.api.encoder.entry.EntryEncoder;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -62,37 +59,4 @@ public interface Encoder<T> {
             }
         };
     }
-
-    /**
-     * Creates a new {@link ElementEncoder} that encodes the collection of {@link T} to an {@link Out}.
-     *
-     * @param <C> the type of the collection to encode
-     * @return a new {@link ElementEncoder} that encodes the collection of {@link T} to an {@link Out}
-     */
-    default <C extends Iterable<T>> @NotNull Encoder<C> toCollectionEncoder() {
-        return ElementEncoder.create(this);
-    }
-
-    /**
-     * Creates a new {@link EntryEncoder} that encodes the {@link Map}, using this {@link Encoder} for encoding the key.
-     *
-     * @param valueEncoder the {@link Encoder} for encoding the value of the entry to an {@link Out}
-     * @param <V>          the type of the value
-     * @return a new {@link EntryEncoder} that encodes the {@link Map}
-     */
-    default <V> @NotNull Encoder<Map<T, V>> toMapEncoderAsKey(@NotNull Encoder<V> valueEncoder) {
-        return EntryEncoder.map(this, valueEncoder);
-    }
-
-    /**
-     * Creates a new {@link EntryEncoder} that encodes the {@link Map}, using this {@link Encoder} for encoding the value.
-     *
-     * @param keyEncoder the {@link Encoder} for encoding the key of the entry to an {@link Out}
-     * @param <K>        the type of the key
-     * @return a new {@link EntryEncoder} that encodes the {@link Map}
-     */
-    default <K> @NotNull Encoder<Map<K, T>> toMapEncoderAsValue(@NotNull Encoder<K> keyEncoder) {
-        return EntryEncoder.map(keyEncoder, this);
-    }
-
 }

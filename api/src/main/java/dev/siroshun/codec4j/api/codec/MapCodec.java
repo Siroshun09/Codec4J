@@ -1,7 +1,7 @@
 package dev.siroshun.codec4j.api.codec;
 
 import dev.siroshun.codec4j.api.decoder.entry.EntryDecoder;
-import dev.siroshun.codec4j.api.encoder.entry.EntryEncoder;
+import dev.siroshun.codec4j.api.encoder.collection.MapEncoder;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +26,7 @@ public final class MapCodec {
     @Contract("_, _ -> new")
     public static <K, V> @NotNull Codec<Map<K, V>> map(@NotNull Codec<K> keyCodec, @NotNull Codec<V> valueCodec) {
         return Codec.codec(
-            EntryEncoder.map(keyCodec, valueCodec),
+            MapEncoder.create(keyCodec, valueCodec),
             EntryDecoder.map(keyCodec, valueCodec)
         ).named("MapCodec[key=" + keyCodec + ",value=" + valueCodec + "]");
     }
@@ -48,7 +48,7 @@ public final class MapCodec {
                                                        @NotNull Supplier<Map<K, V>> factory, boolean allowDuplicatedKey,
                                                        @NotNull UnaryOperator<Map<K, V>> finalizer) {
         return Codec.codec(
-            EntryEncoder.map(keyCodec, valueCodec),
+            MapEncoder.create(keyCodec, valueCodec),
             EntryDecoder.map(keyCodec, valueCodec, factory, allowDuplicatedKey, finalizer)
         ).named("MapCodec[key=" + keyCodec + ",value=" + valueCodec + "]");
     }

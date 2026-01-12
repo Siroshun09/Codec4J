@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.encoder.entry;
+package dev.siroshun.codec4j.api.encoder.collection;
 
 import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.EncodeError;
@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * An {@link Encoder} for encoding entries to an {@link Out}.
@@ -19,22 +17,6 @@ import java.util.Objects;
  * @param <T> the type of the source collection to encode
  */
 public interface EntryEncoder<E, T> extends Encoder<T> {
-
-    /**
-     * Creates an {@link EntryEncoder} for encoding entries of {@link Map} to an {@link Out}.
-     *
-     * @param keyEncoder   the {@link Encoder} for encoding the key of the entry to an {@link Out}
-     * @param valueEncoder the {@link Encoder} for encoding the value of the entry to an {@link Out}
-     * @param <K>          the type of the key
-     * @param <V>          the type of the value
-     * @return an {@link EntryEncoder} for encoding entries of {@link Map} to an {@link Out}
-     */
-    static <K, V> @NotNull Encoder<Map<K, V>> map(@NotNull Encoder<K> keyEncoder, @NotNull Encoder<V> valueEncoder) {
-        Objects.requireNonNull(keyEncoder);
-        Objects.requireNonNull(valueEncoder);
-        MapEntryEncodeProcessor<K, V> processor = new MapEntryEncodeProcessor<>(keyEncoder, valueEncoder);
-        return (EntryEncoder<Map.Entry<K, V>, Map<K, V>>) () -> processor;
-    }
 
     /**
      * Returns the {@link EntryEncoder.EncodeProcessor} for extracting entries from {@link T} and decoding them.

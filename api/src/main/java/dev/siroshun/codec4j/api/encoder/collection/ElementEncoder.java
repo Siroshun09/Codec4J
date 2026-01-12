@@ -1,4 +1,4 @@
-package dev.siroshun.codec4j.api.encoder.element;
+package dev.siroshun.codec4j.api.encoder.collection;
 
 import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.EncodeError;
@@ -18,20 +18,6 @@ import java.util.Objects;
  * @param <T> the type of the source collection to encode
  */
 public interface ElementEncoder<E, T> extends Encoder<T> {
-
-    /**
-     * Creates an {@link ElementEncoder} for encoding elements of {@link C} to an {@link Out}.
-     *
-     * @param elementEncoder the {@link Encoder} for encoding elements of {@link C} to an {@link Out}
-     * @param <E>            the type of the element
-     * @param <C>            the type of the source collection to encode
-     * @return an {@link ElementEncoder} for encoding elements of {@link C} to an {@link Out}
-     */
-    static <E, C extends Iterable<E>> @NotNull Encoder<C> create(@NotNull Encoder<E> elementEncoder) {
-        Objects.requireNonNull(elementEncoder);
-        ElementEncoder.EncodeProcessor<E, C> processor = new IterableEncodeProcessor<>(elementEncoder);
-        return (ElementEncoder<E, C>) () -> processor;
-    }
 
     /**
      * Returns the {@link ElementEncoder.EncodeProcessor} for extracting elements from {@link T} and decoding them.

@@ -1,7 +1,7 @@
 package dev.siroshun.codec4j.api.codec;
 
 import dev.siroshun.codec4j.api.decoder.element.ElementDecoder;
-import dev.siroshun.codec4j.api.encoder.element.ElementEncoder;
+import dev.siroshun.codec4j.api.encoder.collection.ListEncoder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public final class CollectionCodec {
      */
     public static <E> @NotNull Codec<List<E>> list(@NotNull Codec<E> elementCodec) {
         Objects.requireNonNull(elementCodec);
-        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.list(elementCodec)).named("ListCodec[" + elementCodec + "]");
+        return Codec.codec(ListEncoder.create(elementCodec), ElementDecoder.list(elementCodec)).named("ListCodec[" + elementCodec + "]");
     }
 
     /**
@@ -37,7 +37,7 @@ public final class CollectionCodec {
      */
     public static <E> @NotNull Codec<Set<E>> set(@NotNull Codec<E> elementCodec) {
         Objects.requireNonNull(elementCodec);
-        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.set(elementCodec)).named("SetCodec[" + elementCodec + "]");
+        return Codec.codec(ListEncoder.create(elementCodec), ElementDecoder.set(elementCodec)).named("SetCodec[" + elementCodec + "]");
     }
 
     /**
@@ -50,7 +50,7 @@ public final class CollectionCodec {
      */
     public static <E> @NotNull Codec<Set<E>> set(@NotNull Codec<E> elementCodec, boolean allowDuplicates) {
         Objects.requireNonNull(elementCodec);
-        return Codec.codec(ElementEncoder.create(elementCodec), ElementDecoder.set(elementCodec, allowDuplicates)).named("SetCodec[" + elementCodec + "]");
+        return Codec.codec(ListEncoder.create(elementCodec), ElementDecoder.set(elementCodec, allowDuplicates)).named("SetCodec[" + elementCodec + "]");
     }
 
     /**
@@ -62,7 +62,7 @@ public final class CollectionCodec {
      */
     public static <E> @NotNull Codec<Collection<E>> collection(@NotNull Codec<E> elementCodec) {
         Objects.requireNonNull(elementCodec);
-        return Codec.<Collection<E>>codec(ElementEncoder.create(elementCodec), ElementDecoder.list(elementCodec)).named("CollectionCodec[" + elementCodec + "]");
+        return Codec.<Collection<E>>codec(ListEncoder.create(elementCodec), ElementDecoder.list(elementCodec)).named("CollectionCodec[" + elementCodec + "]");
     }
 
     private CollectionCodec() {
