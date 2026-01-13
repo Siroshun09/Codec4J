@@ -1,7 +1,7 @@
 package dev.siroshun.codec4j.testhelper.source;
 
 import dev.siroshun.codec4j.api.codec.Codec;
-import dev.siroshun.codec4j.api.codec.ListCodec;
+import dev.siroshun.codec4j.api.codec.collection.ListCodec;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.ElementReader;

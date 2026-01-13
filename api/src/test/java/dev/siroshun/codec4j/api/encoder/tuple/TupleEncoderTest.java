@@ -1,8 +1,8 @@
 package dev.siroshun.codec4j.api.encoder.tuple;
 
 import dev.siroshun.codec4j.api.codec.Codec;
-import dev.siroshun.codec4j.api.codec.ListCodec;
-import dev.siroshun.codec4j.api.codec.MapCodec;
+import dev.siroshun.codec4j.api.codec.collection.ListCodec;
+import dev.siroshun.codec4j.api.codec.collection.MapCodec;
 import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;

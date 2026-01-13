@@ -1,7 +1,7 @@
 package dev.siroshun.codec4j.testhelper.source;
 
 import dev.siroshun.codec4j.api.codec.Codec;
-import dev.siroshun.codec4j.api.codec.MapCodec;
+import dev.siroshun.codec4j.api.codec.collection.MapCodec;
 
 import java.util.Map;
 import java.util.function.Supplier;
