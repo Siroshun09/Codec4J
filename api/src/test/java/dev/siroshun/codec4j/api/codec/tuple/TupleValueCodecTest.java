@@ -22,6 +22,13 @@ class TupleValueCodecTest {
             TupleValueEncoder.create(Codec.STRING, Function.identity()),
             TupleValueDecoder.create(Codec.STRING)
         ));
+
+        Assertions.assertNotNull(TupleValueCodec.create(
+            TupleValueEncoder.create(Codec.STRING, Function.identity()),
+            TupleValueDecoder.create(Codec.STRING),
+            "String"
+        ));
+
         Assertions.assertNotNull(TupleValueCodec.create(Codec.STRING, Function.identity()));
     }
 
@@ -31,6 +38,11 @@ class TupleValueCodecTest {
         Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create((TupleValueEncoder<String>) null, (TupleValueDecoder<String>) null));
         Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create(null, TupleValueDecoder.create(Codec.STRING)));
         Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create(TupleValueEncoder.create(Codec.STRING, Function.identity()), (TupleValueDecoder<String>) null));
+
+        Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create((TupleValueEncoder<String>) null, (TupleValueDecoder<String>) null, null));
+        Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create(null, TupleValueDecoder.create(Codec.STRING), "String"));
+        Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create(TupleValueEncoder.create(Codec.STRING, Function.identity()), (TupleValueDecoder<String>) null, "String"));
+        Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create(TupleValueEncoder.create(Codec.STRING, Function.identity()), TupleValueDecoder.create(Codec.STRING), null));
 
         Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create(null, (Function<String, String>) null));
         Assertions.assertThrows(NullPointerException.class, () -> TupleValueCodec.create(null, Function.identity()));
@@ -84,4 +96,33 @@ class TupleValueCodecTest {
         );
     }
 
+    @Test
+    void testToString() {
+        {
+            TupleValueEncoder<String> valueEncoder = TupleValueEncoder.create(Codec.STRING, Function.identity());
+            String encoderString = valueEncoder.toString();
+
+            TupleValueDecoder<String> valueDecoder = TupleValueDecoder.create(Codec.STRING);
+            String decoderString = valueDecoder.toString();
+
+            Assertions.assertEquals(
+                "TupleValueCodec{encoder=" + encoderString + ", decoder=" + decoderString + "}",
+                TupleValueCodec.create(valueEncoder, valueDecoder).toString()
+            );
+        }
+
+        {
+            Assertions.assertEquals(
+                "CustomTupleValueCodecName",
+                TupleValueCodec.create(TupleValueEncoder.create(Codec.STRING, Function.identity()), TupleValueDecoder.create(Codec.STRING), "CustomTupleValueCodecName").toString()
+            );
+        }
+
+        {
+            Assertions.assertEquals(
+                "String",
+                TupleValueCodec.create(Codec.STRING, Function.identity()).toString()
+            );
+        }
+    }
 }

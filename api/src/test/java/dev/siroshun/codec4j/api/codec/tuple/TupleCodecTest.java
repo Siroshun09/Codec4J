@@ -3,6 +3,7 @@ package dev.siroshun.codec4j.api.codec.tuple;
 import dev.siroshun.codec4j.api.codec.Codec;
 import dev.siroshun.codec4j.io.Memory;
 import dev.siroshun.jfun.result.assertion.ResultAssertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -22,6 +23,18 @@ class TupleCodecTest {
 
         Memory encoded = ResultAssertions.assertSuccess(testCase.codec().encode(Memory.out(), list));
         ResultAssertions.assertSuccess(testCase.codec().decode(encoded), list);
+    }
+
+    @ParameterizedTest
+    @MethodSource("testCases")
+    void testToString(TestCase testCase) {
+        StringBuilder expected = new StringBuilder("TupleCodec").append(testCase.size()).append("[");
+        for (int i = 0; i < testCase.size(); i++) {
+            if (i != 0) expected.append(",");
+            expected.append("String");
+        }
+        expected.append("]");
+        Assertions.assertEquals(expected.toString(), testCase.codec().toString());
     }
 
     private static Stream<TestCase> testCases() {

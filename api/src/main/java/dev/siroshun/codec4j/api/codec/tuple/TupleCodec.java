@@ -21,52 +21,61 @@ public final class TupleCodec {
 
     @Contract("_, _ -> new")
     public static <T, V1> @NotNull Codec<T> create(@NotNull Function<V1, T> constructor, @NotNull TupleValueCodec<T, V1> codec1) {
-        return Codec.codec(TupleEncoder.create(codec1), TupleDecoder.create(constructor, codec1));
+        return Codec.codec(TupleEncoder.create(codec1), TupleDecoder.create(constructor, codec1), createCodecName(codec1));
     }
 
     @Contract("_, _, _ -> new")
     public static <T, V1, V2> @NotNull Codec<T> create(@NotNull BiFunction<V1, V2, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2), TupleDecoder.create(constructor, codec1, codec2));
+        return Codec.codec(TupleEncoder.create(codec1, codec2), TupleDecoder.create(constructor, codec1, codec2), createCodecName(codec1, codec2));
     }
 
     @Contract("_, _, _, _ -> new")
     public static <T, V1, V2, V3> @NotNull Codec<T> create(@NotNull Function3<V1, V2, V3, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2, @NotNull TupleValueCodec<T, V3> codec3) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3), TupleDecoder.create(constructor, codec1, codec2, codec3));
+        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3), TupleDecoder.create(constructor, codec1, codec2, codec3), createCodecName(codec1, codec2, codec3));
     }
 
     @Contract("_, _, _, _, _ -> new")
     public static <T, V1, V2, V3, V4> @NotNull Codec<T> create(@NotNull Function4<V1, V2, V3, V4, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2, @NotNull TupleValueCodec<T, V3> codec3, @NotNull TupleValueCodec<T, V4> codec4) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4));
+        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4), createCodecName(codec1, codec2, codec3, codec4));
     }
 
     @Contract("_, _, _, _, _, _ -> new")
     public static <T, V1, V2, V3, V4, V5> @NotNull Codec<T> create(@NotNull Function5<V1, V2, V3, V4, V5, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2, @NotNull TupleValueCodec<T, V3> codec3, @NotNull TupleValueCodec<T, V4> codec4, @NotNull TupleValueCodec<T, V5> codec5) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5));
+        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5), createCodecName(codec1, codec2, codec3, codec4, codec5));
     }
 
     @Contract("_, _, _, _, _, _, _ -> new")
     public static <T, V1, V2, V3, V4, V5, V6> @NotNull Codec<T> create(@NotNull Function6<V1, V2, V3, V4, V5, V6, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2, @NotNull TupleValueCodec<T, V3> codec3, @NotNull TupleValueCodec<T, V4> codec4, @NotNull TupleValueCodec<T, V5> codec5, @NotNull TupleValueCodec<T, V6> codec6) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6));
+        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6), createCodecName(codec1, codec2, codec3, codec4, codec5, codec6));
     }
 
     @Contract("_, _, _, _, _, _, _, _ -> new")
     public static <T, V1, V2, V3, V4, V5, V6, V7> @NotNull Codec<T> create(@NotNull Function7<V1, V2, V3, V4, V5, V6, V7, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2, @NotNull TupleValueCodec<T, V3> codec3, @NotNull TupleValueCodec<T, V4> codec4, @NotNull TupleValueCodec<T, V5> codec5, @NotNull TupleValueCodec<T, V6> codec6, @NotNull TupleValueCodec<T, V7> codec7) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6, codec7), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6, codec7));
+        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6, codec7), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6, codec7), createCodecName(codec1, codec2, codec3, codec4, codec5, codec6, codec7));
     }
 
     @Contract("_, _, _, _, _, _, _, _, _ -> new")
     public static <T, V1, V2, V3, V4, V5, V6, V7, V8> @NotNull Codec<T> create(@NotNull Function8<V1, V2, V3, V4, V5, V6, V7, V8, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2, @NotNull TupleValueCodec<T, V3> codec3, @NotNull TupleValueCodec<T, V4> codec4, @NotNull TupleValueCodec<T, V5> codec5, @NotNull TupleValueCodec<T, V6> codec6, @NotNull TupleValueCodec<T, V7> codec7, @NotNull TupleValueCodec<T, V8> codec8) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8));
+        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8), createCodecName(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8));
     }
 
     @Contract("_, _, _, _, _, _, _, _, _, _ -> new")
     public static <T, V1, V2, V3, V4, V5, V6, V7, V8, V9> @NotNull Codec<T> create(@NotNull Function9<V1, V2, V3, V4, V5, V6, V7, V8, V9, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2, @NotNull TupleValueCodec<T, V3> codec3, @NotNull TupleValueCodec<T, V4> codec4, @NotNull TupleValueCodec<T, V5> codec5, @NotNull TupleValueCodec<T, V6> codec6, @NotNull TupleValueCodec<T, V7> codec7, @NotNull TupleValueCodec<T, V8> codec8, @NotNull TupleValueCodec<T, V9> codec9) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9));
+        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9), createCodecName(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9));
     }
 
     @Contract("_, _, _, _, _, _, _, _, _, _, _ -> new")
     public static <T, V1, V2, V3, V4, V5, V6, V7, V8, V9, V10> @NotNull Codec<T> create(@NotNull Function10<V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, T> constructor, @NotNull TupleValueCodec<T, V1> codec1, @NotNull TupleValueCodec<T, V2> codec2, @NotNull TupleValueCodec<T, V3> codec3, @NotNull TupleValueCodec<T, V4> codec4, @NotNull TupleValueCodec<T, V5> codec5, @NotNull TupleValueCodec<T, V6> codec6, @NotNull TupleValueCodec<T, V7> codec7, @NotNull TupleValueCodec<T, V8> codec8, @NotNull TupleValueCodec<T, V9> codec9, @NotNull TupleValueCodec<T, V10> codec10) {
-        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9, codec10), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9, codec10));
+        return Codec.codec(TupleEncoder.create(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9, codec10), TupleDecoder.create(constructor, codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9, codec10), createCodecName(codec1, codec2, codec3, codec4, codec5, codec6, codec7, codec8, codec9, codec10));
+    }
+
+    private static @NotNull String createCodecName(TupleValueCodec<?, ?>... codecs) {
+        StringBuilder builder = new StringBuilder("TupleCodec").append(codecs.length).append("[");
+        for (int i = 0; i < codecs.length; i++) {
+            if (i != 0) builder.append(",");
+            builder.append(codecs[i]);
+        }
+        return builder.append("]").toString();
     }
 
     private TupleCodec() {
