@@ -1,11 +1,13 @@
 package dev.siroshun.codec4j.io.yaml;
 
+import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.file.FileIO;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.codec4j.testhelper.io.FileIOTestCase;
 import dev.siroshun.codec4j.testhelper.io.TextFileIOTest;
 import dev.siroshun.codec4j.testhelper.source.Source;
 import dev.siroshun.codec4j.testhelper.source.ValueSource;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.stream.Stream;
 
@@ -29,5 +31,10 @@ class YamlIOTest extends TextFileIOTest {
                 )
             ).flatMap(source -> FileIOTestCase.fromSource(impl, source))
         );
+    }
+
+    @Override
+    protected void assertEncodeFailure(EncodeError expected, EncodeError error) {
+        Assertions.assertEquals(expected, error);
     }
 }

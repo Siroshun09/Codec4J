@@ -72,11 +72,11 @@ public abstract class TextFileIOTest extends FileIOTest {
             Assertions.assertEquals(value, decoded);
         }
 
-        if (false) { // encode failure // TODO: unexpected fatal error returned
+        { // encode failure
             EncodeError encodeError = EncodeError.failure("error");
-            ResultAssertions.assertFailure(
-                io.encodeToString(ErrorCodec.encoder(encodeError), null),
-                encodeError
+            this.assertEncodeFailure(
+                encodeError,
+                ResultAssertions.assertFailure(io.encodeToString(ErrorCodec.encoder(encodeError), null))
             );
         }
 

@@ -50,27 +50,23 @@ public abstract class FileIOTest {
         T value = testCase.value();
         Codec<T> codec = testCase.codec();
 
-        List<Path> dirs = List.of(dir, dir.resolve("dir"), dir.resolve("dir1", "dir2"));
-
-        for (Path parent : dirs) { // success
+        for (Path parent : this.createDirectoryPaths(dir)) { // success
             Path file = parent.resolve("success.tmp");
             ResultAssertions.assertSuccess(io.encodeTo(file, codec, value));
             ResultAssertions.assertSuccess(io.decodeFrom(file, codec), value);
         }
 
-        if (false) { // TODO: unexpected fatal error returned
-            for (Path parent : dirs) { // encode failure
-                Path file = parent.resolve("encode_failure.tmp");
-                EncodeError encodeError = EncodeError.failure("error");
-                ResultAssertions.assertFailure(
-                    io.encodeTo(file, ErrorCodec.encoder(encodeError), null),
-                    encodeError
-                );
-                Assertions.assertTrue(Files.exists(file));
-            }
+        for (Path parent : this.createDirectoryPaths(dir)) { // encode failure
+            Path file = parent.resolve("encode_failure.tmp");
+            EncodeError encodeError = EncodeError.failure("error");
+            this.assertEncodeFailure(
+                encodeError,
+                ResultAssertions.assertFailure(io.encodeTo(file, ErrorCodec.encoder(encodeError), null))
+            );
+            Assertions.assertTrue(Files.exists(file));
         }
 
-        for (Path parent : dirs) { // decode failure
+        for (Path parent : this.createDirectoryPaths(dir)) { // decode failure
             Path file = parent.resolve("decode_failure.tmp");
             ResultAssertions.assertSuccess(io.encodeTo(file, codec, value));
 
@@ -95,11 +91,11 @@ public abstract class FileIOTest {
             Assertions.assertEquals(value, decoded);
         }
 
-        if (false) { // encode failure // TODO: unexpected fatal error returned
+        { // encode failure
             EncodeError encodeError = EncodeError.failure("error");
-            ResultAssertions.assertFailure(
-                io.encodeToBytes(ErrorCodec.encoder(encodeError), null),
-                encodeError
+            this.assertEncodeFailure(
+                encodeError,
+                ResultAssertions.assertFailure(io.encodeToBytes(ErrorCodec.encoder(encodeError), null))
             );
         }
 
@@ -119,21 +115,10 @@ public abstract class FileIOTest {
     protected void createParentDirectory(FileIO io, @TempDir Path dir) {
         Assertions.assertTrue(Files.isDirectory(dir));
 
-        {
-            Path file = dir.resolve("test.txt");
+        for (Path parent : this.createDirectoryPaths(dir)) {
+            Path file = parent.resolve("test.txt");
             Assertions.assertDoesNotThrow(() -> io.createParentDirectory(file));
-        }
-
-        {
-            Path file = dir.resolve("dir1", "test.txt");
-            Assertions.assertDoesNotThrow(() -> io.createParentDirectory(file));
-            Assertions.assertTrue(Files.isDirectory(dir.resolve("dir1")));
-        }
-
-        {
-            Path file = dir.resolve("dir1", "dir2", "test.txt");
-            Assertions.assertDoesNotThrow(() -> io.createParentDirectory(file));
-            Assertions.assertTrue(Files.isDirectory(dir.resolve("dir1", "dir2")));
+            Assertions.assertTrue(Files.isDirectory(parent));
         }
     }
 
@@ -151,5 +136,11 @@ public abstract class FileIOTest {
 
     protected Stream<FileIOTestCase<?>> testCasesForFile() {
         return this.createTestCasesForFile(this.implementations());
+    }
+
+    protected abstract void assertEncodeFailure(EncodeError expected, EncodeError error);
+
+    protected List<Path> createDirectoryPaths(Path dir) {
+        return List.of(dir, dir.resolve("dir"), dir.resolve("dir1", "dir2"));
     }
 }

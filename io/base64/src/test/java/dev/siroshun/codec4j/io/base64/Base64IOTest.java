@@ -1,9 +1,11 @@
 package dev.siroshun.codec4j.io.base64;
 
+import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.file.FileIO;
 import dev.siroshun.codec4j.io.gson.GsonIO;
 import dev.siroshun.codec4j.testhelper.io.FileIOTest;
 import dev.siroshun.codec4j.testhelper.io.FileIOTestCase;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.stream.Stream;
 
@@ -17,5 +19,12 @@ class Base64IOTest extends FileIOTest {
     @Override
     protected Stream<FileIOTestCase<?>> createTestCases(Stream<FileIO> impls) {
         return impls.flatMap(FileIOTestCase::forAllSources);
+    }
+
+    @Override
+    protected void assertEncodeFailure(EncodeError expected, EncodeError error) {
+        Assertions.assertTrue(
+            Assertions.assertInstanceOf(EncodeError.MultipleError.class, error).errors().contains(expected)
+        );
     }
 }
