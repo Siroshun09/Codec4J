@@ -24,6 +24,17 @@ import java.util.stream.Stream;
 
 class ListEncoderTest {
 
+    @Test
+    void create() {
+        Assertions.assertNotNull(ListEncoder.create(Codec.STRING));
+    }
+
+    @Test
+    @SuppressWarnings("DataFlowIssue")
+    void create_null_argument() {
+        Assertions.assertThrows(NullPointerException.class, () -> ListEncoder.create(null));
+    }
+
     @ParameterizedTest
     @MethodSource("testCases")
     void encode(TestCase<?> testCase) {
