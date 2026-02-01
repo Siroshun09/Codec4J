@@ -4,13 +4,14 @@ import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNullByDefault;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
  * An interface to indicate errors when encoding.
  */
 @NotNullByDefault
-public sealed interface EncodeError permits EncodeError.Failure, EncodeError.FatalError, EncodeError.NotWritableType {
+public sealed interface EncodeError permits EncodeError.Failure, EncodeError.FatalError, EncodeError.MultipleError, EncodeError.NotWritableType {
 
     /**
      * Creates a {@link EncodeError} when the type is not writable.
@@ -32,6 +33,17 @@ public sealed interface EncodeError permits EncodeError.Failure, EncodeError.Fat
     static FatalError fatalError(Throwable cause) {
         Objects.requireNonNull(cause);
         return new EncodeErrors.FatalError(cause);
+    }
+
+    /**
+     * Creates a {@link EncodeError} that may have multiple {@link EncodeError}s.
+     *
+     * @param errors the {@link List} of {@link EncodeError}s
+     * @return a new {@link EncodeError} that may have multiple {@link EncodeError}s
+     */
+    static MultipleError multipleError(List<EncodeError> errors) {
+        Objects.requireNonNull(errors);
+        return new EncodeErrors.MultipleError(List.copyOf(errors));
     }
 
     /**
@@ -86,6 +98,20 @@ public sealed interface EncodeError permits EncodeError.Failure, EncodeError.Fat
          * @return the {@link Throwable} that caused the error
          */
         Throwable cause();
+    }
+
+    /**
+     * An interface that may have multiple {@link EncodeError}s.
+     */
+    sealed interface MultipleError extends EncodeError permits EncodeErrors.MultipleError {
+
+        /**
+         * Gets the {@link List} of {@link EncodeError}s.
+         *
+         * @return the {@link List} of {@link EncodeError}s
+         */
+        List<EncodeError> errors();
+
     }
 
     /**

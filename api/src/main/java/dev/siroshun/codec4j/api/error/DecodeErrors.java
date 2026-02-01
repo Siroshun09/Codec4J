@@ -4,6 +4,7 @@ import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNullByDefault;
 
+import java.util.List;
 import java.util.OptionalInt;
 
 @NotNullByDefault
@@ -32,6 +33,9 @@ final class DecodeErrors {
     }
 
     record FatalError(Throwable cause) implements DecodeError.FatalError {
+    }
+
+    record MultipleError(List<DecodeError> errors) implements DecodeError.MultipleError {
     }
 
     record IgnorableError(DecodeError error) implements DecodeError.IgnorableError {

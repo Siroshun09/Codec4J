@@ -4,6 +4,7 @@ import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNullByDefault;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.OptionalInt;
 
@@ -11,7 +12,7 @@ import java.util.OptionalInt;
  * An interface to indicate errors when decoding.
  */
 @NotNullByDefault
-public sealed interface DecodeError permits DecodeError.Failure, DecodeError.FatalError, DecodeError.IgnorableError, DecodeError.InvalidChar, DecodeError.InvalidNumber, DecodeError.InvalidNumberFormat, DecodeError.IterationError, DecodeError.NoElementError, DecodeError.NoEntryError, DecodeError.TypeMismatch {
+public sealed interface DecodeError permits DecodeError.Failure, DecodeError.FatalError, DecodeError.IgnorableError, DecodeError.InvalidChar, DecodeError.InvalidNumber, DecodeError.InvalidNumberFormat, DecodeError.IterationError, DecodeError.MultipleError, DecodeError.NoElementError, DecodeError.NoEntryError, DecodeError.TypeMismatch {
 
     /**
      * Creates a {@link DecodeError} when the type is different from the expected type.
@@ -108,6 +109,17 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
     static FatalError fatalError(Throwable cause) {
         Objects.requireNonNull(cause);
         return new DecodeErrors.FatalError(cause);
+    }
+
+    /**
+     * Creates a {@link DecodeError} that may have multiple {@link DecodeError}s.
+     *
+     * @param errors the {@link List} of {@link DecodeError}s
+     * @return a new {@link DecodeError} that may have multiple {@link DecodeError}s
+     */
+    static MultipleError multipleError(List<DecodeError> errors) {
+        Objects.requireNonNull(errors);
+        return new DecodeErrors.MultipleError(List.copyOf(errors));
     }
 
     /**
@@ -268,6 +280,20 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
          * @return a {@link Throwable} that caused the error
          */
         Throwable cause();
+    }
+
+    /**
+     * An interface that may have multiple {@link DecodeError}s.
+     */
+    sealed interface MultipleError extends DecodeError permits DecodeErrors.MultipleError {
+
+        /**
+         * Gets the {@link List} of {@link DecodeError}s.
+         *
+         * @return the {@link List} of {@link DecodeError}s
+         */
+        List<DecodeError> errors();
+
     }
 
     /**
