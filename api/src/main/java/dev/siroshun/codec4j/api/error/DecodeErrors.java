@@ -28,6 +28,9 @@ final class DecodeErrors {
     record NoElementError(OptionalInt index) implements DecodeError.NoElementError {
     }
 
+    record NoEntryError() implements DecodeError.NoEntryError {
+    }
+
     record FatalError(Throwable cause) implements DecodeError.FatalError {
     }
 

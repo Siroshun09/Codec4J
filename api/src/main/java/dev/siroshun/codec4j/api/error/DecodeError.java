@@ -11,7 +11,7 @@ import java.util.OptionalInt;
  * An interface to indicate errors when decoding.
  */
 @NotNullByDefault
-public sealed interface DecodeError permits DecodeError.Failure, DecodeError.FatalError, DecodeError.IgnorableError, DecodeError.InvalidChar, DecodeError.InvalidNumber, DecodeError.InvalidNumberFormat, DecodeError.IterationError, DecodeError.NoElementError, DecodeError.TypeMismatch {
+public sealed interface DecodeError permits DecodeError.Failure, DecodeError.FatalError, DecodeError.IgnorableError, DecodeError.InvalidChar, DecodeError.InvalidNumber, DecodeError.InvalidNumberFormat, DecodeError.IterationError, DecodeError.NoElementError, DecodeError.NoEntryError, DecodeError.TypeMismatch {
 
     /**
      * Creates a {@link DecodeError} when the type is different from the expected type.
@@ -88,6 +88,15 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
      */
     static NoElementError noElementError(int index) {
         return new DecodeErrors.NoElementError(OptionalInt.of(index));
+    }
+
+    /**
+     * Creates a {@link DecodeError} when there is no entry.
+     *
+     * @return a new {@link DecodeError}
+     */
+    static NoEntryError noEntryError() {
+        return new DecodeErrors.NoEntryError();
     }
 
     /**
@@ -240,6 +249,12 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
          */
         OptionalInt index();
 
+    }
+
+    /**
+     * An interface that indicates a {@link DecodeError} when there is no entry.
+     */
+    sealed interface NoEntryError extends DecodeError permits DecodeErrors.NoEntryError {
     }
 
     /**
