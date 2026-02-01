@@ -16,6 +16,7 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.List;
 
 /**
  * An implementation of {@link TextFileIO} for Gson.
@@ -74,19 +75,27 @@ public final class GsonIO implements TextFileIO {
     @SuppressWarnings("unchecked")
     @Override
     public <T> Result<T, DecodeError> decodeFrom(Reader reader, Decoder<? extends T> decoder) {
-        try (var in = this.newIn(reader)) {
-            return (Result<T, DecodeError>) decoder.decode(in);
+        Result<T, DecodeError> result = null;
+        try (JsonReaderIn in = this.newIn(reader)) {
+            result = (Result<T, DecodeError>) decoder.decode(in);
         } catch (IOException e) {
-            return DecodeError.fatalError(e).asFailure();
+            return result.isFailure() ?
+                DecodeError.multipleError(List.of(result.unwrapError(), DecodeError.fatalError(e))).asFailure() :
+                DecodeError.fatalError(e).asFailure();
         }
+        return result;
     }
 
     @Override
     public @NotNull <T> Result<Void, EncodeError> encodeTo(@NotNull Writer writer, @NotNull Encoder<? super T> encoder, @UnknownNullability T input) {
-        try (var out = this.newOut(writer)) {
-            return encoder.encode(out, input);
+        Result<Void, EncodeError> result = null;
+        try (JsonWriterOut out = this.newOut(writer)) {
+            result = encoder.encode(out, input);
         } catch (IOException e) {
-            return EncodeError.fatalError(e).asFailure();
+            return result != null && result.isFailure() ?
+                EncodeError.multipleError(List.of(result.unwrapError(), EncodeError.fatalError(e))).asFailure() :
+                EncodeError.fatalError(e).asFailure();
         }
+        return result;
     }
 }
