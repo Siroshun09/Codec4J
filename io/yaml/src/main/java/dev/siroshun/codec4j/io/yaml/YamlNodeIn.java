@@ -3,6 +3,7 @@ package dev.siroshun.codec4j.io.yaml;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.ElementReader;
 import dev.siroshun.codec4j.api.io.EntryIn;
+import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
@@ -191,6 +192,15 @@ class YamlNodeIn implements In {
     }
 
     @Override
+    public @NotNull Result<EntryReader, DecodeError> readMap() {
+        if (!(this.node instanceof MappingNode identity)) {
+            return DecodeError.typeMismatch(Type.MAP, this.getType()).asFailure();
+        }
+
+        return Result.success(new YamlEntryReader(identity.getValue().iterator(), this.constructor));
+    }
+
+    @Override
     public <R> Result<R, DecodeError> readMap(R identity, BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
         if (!(this.node instanceof MappingNode mappingNode)) {
             return DecodeError.typeMismatch(Type.MAP, this.getType()).asFailure();
@@ -232,7 +242,8 @@ class YamlNodeIn implements In {
         }
     }
 
-    private record YamlElementReader(Iterator<Node> iterator, ObjectConstructor constructor) implements ElementReader<In> {
+    private record YamlElementReader(Iterator<Node> iterator,
+                                     ObjectConstructor constructor) implements ElementReader<In> {
 
         @Override
         public boolean hasNext() {
@@ -245,6 +256,28 @@ class YamlNodeIn implements In {
                 return Result.success(new YamlNodeIn(this.iterator.next(), this.constructor));
             } else {
                 return DecodeError.noElementError().asFailure();
+            }
+        }
+
+        @Override
+        public @NotNull Result<Void, DecodeError> finish() {
+            return Result.success();
+        }
+    }
+
+    private record YamlEntryReader(Iterator<NodeTuple> iterator, ObjectConstructor constructor) implements EntryReader {
+
+        @Override
+        public boolean hasNext() {
+            return this.iterator.hasNext();
+        }
+
+        @Override
+        public @NotNull Result<EntryIn, DecodeError> next() {
+            if (this.hasNext()) {
+                return Result.success(new YamlTupleIn(this.iterator.next(), this.constructor));
+            } else {
+                return DecodeError.noEntryError().asFailure();
             }
         }
 

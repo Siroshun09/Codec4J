@@ -103,6 +103,13 @@ public interface In {
     <R> @NotNull Result<R, DecodeError> readList(@NotNull R identity, @NotNull BiFunction<R, ? super In, Result<?, ?>> operator);
 
     /**
+     * Reads the current value as a map.
+     *
+     * @return a result containing an {@link EntryReader} for reading the map entries, or a {@link DecodeError} if the operation failed
+     */
+    @NotNull Result<EntryReader, DecodeError> readMap();
+
+    /**
      * Reads the current value as a map, using the provided identity object and operator.
      *
      * @param <R>      the type of the result container

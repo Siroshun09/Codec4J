@@ -4,11 +4,13 @@ import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.EntryAppender;
 import dev.siroshun.codec4j.api.io.EntryIn;
+import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +34,10 @@ final class MemoryMap implements Memory.Delegated {
     @Override
     public Type type() {
         return Type.MAP;
+    }
+
+    EntryReader newReader() {
+        return new Reader(this.root);
     }
 
     <R> Result<R, DecodeError> readEntries(R identity, BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
@@ -104,6 +110,41 @@ final class MemoryMap implements Memory.Delegated {
         @Override
         public Result<Memory, EncodeError> finish() {
             return Result.success(new Memory(new MemoryMap(this.root)));
+        }
+    }
+
+    private static final class Reader implements EntryReader {
+
+        private @Nullable LinkedNode<Entry> curr;
+
+        private Reader(@Nullable LinkedNode<Entry> curr) {
+            this.curr = curr;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return this.curr != null && this.curr.value() != null;
+        }
+
+        @Override
+        public @NotNull Result<EntryIn, DecodeError> next() {
+            LinkedNode<Entry> curr = this.curr;
+            if (curr == null) {
+                return DecodeError.noElementError().asFailure();
+            }
+
+            Entry value = curr.value();
+            if (value == null) {
+                return DecodeError.noElementError().asFailure();
+            }
+
+            this.curr = curr.next();
+            return Result.success(value);
+        }
+
+        @Override
+        public @NotNull Result<Void, DecodeError> finish() {
+            return Result.success();
         }
     }
 }

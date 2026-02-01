@@ -3,6 +3,7 @@ package dev.siroshun.codec4j.io;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.ElementReader;
 import dev.siroshun.codec4j.api.io.EntryIn;
+import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.codec4j.api.io.Type;
@@ -105,6 +106,15 @@ public final class Memory implements In {
             return list.readElements(identity, operator);
         } else {
             return DecodeError.typeMismatch(Type.LIST, this.delegate.type()).asFailure();
+        }
+    }
+
+    @Override
+    public @NotNull Result<EntryReader, DecodeError> readMap() {
+        if (this.delegate instanceof MemoryMap map) {
+            return Result.success(map.newReader());
+        } else {
+            return DecodeError.typeMismatch(Type.MAP, this.delegate.type()).asFailure();
         }
     }
 

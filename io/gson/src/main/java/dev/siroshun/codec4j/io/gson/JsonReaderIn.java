@@ -5,6 +5,7 @@ import com.google.gson.stream.JsonToken;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.ElementReader;
 import dev.siroshun.codec4j.api.io.EntryIn;
+import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
@@ -249,6 +250,21 @@ public class JsonReaderIn implements In, AutoCloseable {
     }
 
     @Override
+    public @NotNull Result<EntryReader, DecodeError> readMap() {
+        try {
+            var token = this.reader.peek();
+            if (token == JsonToken.BEGIN_OBJECT) {
+                this.reader.beginObject();
+                return Result.success(new JsonEntryReader());
+            } else {
+                return DecodeError.typeMismatch(Type.MAP, convertType(token)).asFailure();
+            }
+        } catch (IOException e) {
+            return DecodeError.fatalError(e).asFailure();
+        }
+    }
+
+    @Override
     public @NotNull <R> Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
         try {
             var token = this.reader.peek();
@@ -381,6 +397,11 @@ public class JsonReaderIn implements In, AutoCloseable {
         }
 
         @Override
+        public @NotNull Result<EntryReader, DecodeError> readMap() {
+            return DecodeError.typeMismatch(Type.MAP, Type.STRING).asFailure();
+        }
+
+        @Override
         public @NotNull <R> Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
             return DecodeError.typeMismatch(Type.STRING, Type.STRING).asFailure();
         }
@@ -430,6 +451,41 @@ public class JsonReaderIn implements In, AutoCloseable {
         public @NotNull Result<Void, DecodeError> finish() {
             try {
                 JsonReaderIn.this.reader.endArray();
+                return Result.success();
+            } catch (IOException e) {
+                return DecodeError.fatalError(e).asFailure();
+            }
+        }
+    }
+
+    private class JsonEntryReader implements EntryReader {
+
+        @Override
+        public boolean hasNext() {
+            try {
+                return JsonReaderIn.this.reader.hasNext();
+            } catch (IOException e) {
+                return false;
+            }
+        }
+
+        @Override
+        public @NotNull Result<EntryIn, DecodeError> next() {
+            try {
+                if (JsonReaderIn.this.reader.hasNext()) {
+                    return Result.success(new JsonEntryIn());
+                } else {
+                    return DecodeError.noEntryError().asFailure();
+                }
+            } catch (IOException e) {
+                return DecodeError.fatalError(e).asFailure();
+            }
+        }
+
+        @Override
+        public @NotNull Result<Void, DecodeError> finish() {
+            try {
+                JsonReaderIn.this.reader.endObject();
                 return Result.success();
             } catch (IOException e) {
                 return DecodeError.fatalError(e).asFailure();
