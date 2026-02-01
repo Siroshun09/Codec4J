@@ -1,31 +1,33 @@
 package dev.siroshun.codec4j.io.yaml;
 
+import dev.siroshun.codec4j.api.file.FileIO;
 import dev.siroshun.codec4j.api.io.Type;
-import dev.siroshun.codec4j.testhelper.FileIOTestCase;
+import dev.siroshun.codec4j.testhelper.io.FileIOTestCase;
+import dev.siroshun.codec4j.testhelper.io.TextFileIOTest;
 import dev.siroshun.codec4j.testhelper.source.Source;
 import dev.siroshun.codec4j.testhelper.source.ValueSource;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-class YamlIOTest {
+class YamlIOTest extends TextFileIOTest {
 
-    @ParameterizedTest
-    @MethodSource("testCasesForDefault")
-    void testDefault(FileIOTestCase<?> testCase) {
-        testCase.doTest();
+    @Override
+    protected Stream<FileIO> implementations() {
+        return Stream.of(YamlIO.DEFAULT);
     }
 
-    private static Stream<FileIOTestCase<?>> testCasesForDefault() {
-        return Source.fromValueSources(
-            Stream.concat(
-                ValueSource.sources().stream().filter(source -> source.type() != Type.CHAR && source.type() != Type.FLOAT),
-                Stream.of(
-                    new ValueSource<>(Type.CHAR, () -> Stream.of('a', ' ', '\n')),
-                    new ValueSource<>(Type.FLOAT, () -> Stream.of(-3.14f, -1.0f, 0.0f, 1.0f, 3.14f))
+    @Override
+    protected Stream<FileIOTestCase<?>> createTestCases(Stream<FileIO> impls) {
+        return impls.flatMap(
+            impl -> Source.fromValueSources(
+                Stream.concat(
+                    ValueSource.sources().stream().filter(source -> source.type() != Type.CHAR && source.type() != Type.FLOAT),
+                    Stream.of(
+                        new ValueSource<>(Type.CHAR, () -> Stream.of('a', ' ', '\n')),
+                        new ValueSource<>(Type.FLOAT, () -> Stream.of(-3.14f, -1.0f, 0.0f, 1.0f, 3.14f))
+                    )
                 )
-            )
-        ).flatMap(source -> FileIOTestCase.fromSource(YamlIO.DEFAULT, source));
+            ).flatMap(source -> FileIOTestCase.fromSource(impl, source))
+        );
     }
 }

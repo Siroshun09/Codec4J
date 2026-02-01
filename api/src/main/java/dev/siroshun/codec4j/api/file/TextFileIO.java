@@ -18,12 +18,15 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
 public interface TextFileIO extends FileIO {
+    
+    Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     <T> @NotNull Result<T, DecodeError> decodeFrom(@NotNull Reader reader, @NotNull Decoder<? extends T> decoder);
 
@@ -33,7 +36,7 @@ public interface TextFileIO extends FileIO {
     default <T> @NotNull Result<T, DecodeError> decodeFrom(@NotNull Path filepath, @NotNull Decoder<? extends T> decoder) {
         Objects.requireNonNull(filepath);
         Objects.requireNonNull(decoder);
-        try (Reader reader = Files.isRegularFile(filepath) ? Files.newBufferedReader(filepath, StandardCharsets.UTF_8) : Reader.nullReader()) {
+        try (Reader reader = Files.isRegularFile(filepath) ? Files.newBufferedReader(filepath, DEFAULT_CHARSET) : Reader.nullReader()) {
             return this.decodeFrom(reader, decoder);
         } catch (IOException e) {
             return DecodeError.fatalError(e).asFailure();
@@ -50,7 +53,7 @@ public interface TextFileIO extends FileIO {
             return result.asFailure();
         }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(filepath, StandardCharsets.UTF_8, DefaultOpenOptions.WRITE_OPEN_OPTIONS)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(filepath, DEFAULT_CHARSET, DefaultOpenOptions.WRITE_OPEN_OPTIONS)) {
             return this.encodeTo(writer, encoder, input);
         } catch (IOException e) {
             return EncodeError.fatalError(e).asFailure();
@@ -61,7 +64,7 @@ public interface TextFileIO extends FileIO {
     default <T> @NotNull Result<T, DecodeError> decodeFrom(@NotNull InputStream input, @NotNull Decoder<? extends T> decoder) {
         Objects.requireNonNull(input);
         Objects.requireNonNull(decoder);
-        try (InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8)) {
+        try (InputStreamReader reader = new InputStreamReader(input, DEFAULT_CHARSET)) {
             return this.decodeFrom(reader, decoder);
         } catch (IOException e) {
             return DecodeError.fatalError(e).asFailure();
@@ -72,7 +75,7 @@ public interface TextFileIO extends FileIO {
     default <T> @NotNull Result<Void, EncodeError> encodeTo(@NotNull OutputStream output, @NotNull Encoder<? super T> encoder, @UnknownNullability T input) {
         Objects.requireNonNull(output);
         Objects.requireNonNull(encoder);
-        try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
+        try (OutputStreamWriter writer = new OutputStreamWriter(output, DEFAULT_CHARSET)) {
             return this.encodeTo(writer, encoder, input);
         } catch (IOException e) {
             return EncodeError.fatalError(e).asFailure();

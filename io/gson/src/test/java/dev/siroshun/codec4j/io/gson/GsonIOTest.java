@@ -1,30 +1,20 @@
 package dev.siroshun.codec4j.io.gson;
 
-import dev.siroshun.codec4j.testhelper.FileIOTestCase;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import dev.siroshun.codec4j.api.file.FileIO;
+import dev.siroshun.codec4j.testhelper.io.FileIOTestCase;
+import dev.siroshun.codec4j.testhelper.io.TextFileIOTest;
 
 import java.util.stream.Stream;
 
-class GsonIOTest {
+class GsonIOTest extends TextFileIOTest {
 
-    @ParameterizedTest
-    @MethodSource("testCasesForDefault")
-    void testDefault(FileIOTestCase<?> testCase) {
-        testCase.doTest();
+    @Override
+    protected Stream<FileIO> implementations() {
+        return Stream.of(GsonIO.DEFAULT, GsonIO.PRETTY_PRINTING);
     }
 
-    private static Stream<FileIOTestCase<?>> testCasesForDefault() {
-        return FileIOTestCase.forAllSources(GsonIO.DEFAULT);
-    }
-
-    @ParameterizedTest
-    @MethodSource("testCasesForPrettyPrinting")
-    void testPrettyPrinting(FileIOTestCase<?> testCase) {
-        testCase.doTest();
-    }
-
-    private static Stream<FileIOTestCase<?>> testCasesForPrettyPrinting() {
-        return FileIOTestCase.forAllSources(GsonIO.PRETTY_PRINTING);
+    @Override
+    protected Stream<FileIOTestCase<?>> createTestCases(Stream<FileIO> impls) {
+        return impls.flatMap(FileIOTestCase::forAllSources);
     }
 }

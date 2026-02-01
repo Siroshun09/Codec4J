@@ -1,31 +1,21 @@
 package dev.siroshun.codec4j.io.base64;
 
+import dev.siroshun.codec4j.api.file.FileIO;
 import dev.siroshun.codec4j.io.gson.GsonIO;
-import dev.siroshun.codec4j.testhelper.FileIOTestCase;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import dev.siroshun.codec4j.testhelper.io.FileIOTest;
+import dev.siroshun.codec4j.testhelper.io.FileIOTestCase;
 
 import java.util.stream.Stream;
 
-class Base64IOTest {
+class Base64IOTest extends FileIOTest {
 
-    @ParameterizedTest
-    @MethodSource("testCasesForBase64")
-    void testBase64(FileIOTestCase<?> testCase) {
-        testCase.doTest();
+    @Override
+    protected Stream<FileIO> implementations() {
+        return Stream.of(Base64IO.create(GsonIO.DEFAULT), Base64IO.createUrlBase64(GsonIO.DEFAULT));
     }
 
-    private static Stream<FileIOTestCase<?>> testCasesForBase64() {
-        return FileIOTestCase.forAllSources(Base64IO.create(GsonIO.DEFAULT));
-    }
-
-    @ParameterizedTest
-    @MethodSource("testCasesForUrlBase64")
-    void testUrlBase64(FileIOTestCase<?> testCase) {
-        testCase.doTest();
-    }
-
-    private static Stream<FileIOTestCase<?>> testCasesForUrlBase64() {
-        return FileIOTestCase.forAllSources(Base64IO.createUrlBase64(GsonIO.DEFAULT));
+    @Override
+    protected Stream<FileIOTestCase<?>> createTestCases(Stream<FileIO> impls) {
+        return impls.flatMap(FileIOTestCase::forAllSources);
     }
 }
