@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 /**
- * A {@link Decoder} for decoding elements from an {@link In#readList(Object, java.util.function.BiFunction)}.
+ * A {@link Decoder} for decoding elements from an {@link In#readList()}.
  *
  * @param <E> the type of the element
  * @param <R> the type of the result
@@ -73,9 +73,9 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
         @NotNull Result<E, DecodeError> decodeElement(@NotNull In in);
 
         /**
-         * Creates a {@link C} for an identity of {@link In#readList(Object, java.util.function.BiFunction)}.
+         * Creates an identity object of {@link C}.
          *
-         * @return a {@link C} for an identity of {@link In#readList(Object, java.util.function.BiFunction)}
+         * @return the identity object
          */
         @NotNull C createIdentity();
 
