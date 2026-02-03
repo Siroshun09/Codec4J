@@ -2,6 +2,7 @@ package dev.siroshun.codec4j.api.decoder.collection;
 
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
+import dev.siroshun.codec4j.api.io.ElementReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
@@ -24,11 +25,22 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
 
     @Override
     default @NotNull Result<R, DecodeError> decode(@NotNull In in) {
-        return in.readList(this.decodeProcessor().createIdentity(), (identity, e) -> {
-            Result<E, DecodeError> decodeResult = this.decodeProcessor().decodeElement(e);
+        Result<ElementReader<? extends In>, DecodeError> readResult = in.readList();
+        if (readResult.isFailure()) {
+            return readResult.asFailure();
+        }
+
+        ElementReader<? extends In> reader = readResult.unwrap();
+        R identity = this.decodeProcessor().createIdentity();
+
+        while (reader.hasNext()) {
+            Result<E, DecodeError> decodeResult = this.decodeProcessor().decodeElement(reader.next().unwrap());
 
             if (decodeResult.isFailure()) {
-                return decodeResult.unwrapError().isIgnorable() ? Result.success() : decodeResult.asFailure();
+                if (decodeResult.unwrapError().isIgnorable()) {
+                    continue;
+                }
+                return decodeResult.asFailure();
             }
 
             E element = decodeResult.unwrap();
@@ -37,9 +49,11 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
             if (acceptResult.isFailure() && !acceptResult.unwrapError().isIgnorable()) {
                 return acceptResult.asFailure();
             }
+        }
 
-            return Result.success();
-        }).map(this.decodeProcessor()::finalizeIdentity);
+        reader.finish();
+
+        return Result.success(this.decodeProcessor().finalizeIdentity(identity));
     }
 
     /**

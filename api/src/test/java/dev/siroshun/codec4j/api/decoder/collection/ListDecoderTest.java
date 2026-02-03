@@ -68,7 +68,7 @@ class ListDecoderTest {
         }).unwrap();
         ResultAssertions.assertFailure(
             ListDecoder.create(ErrorCodec.decoder(decodeError)).decode(memory),
-            DecodeError.iterationError(decodeError.asFailure())
+            decodeError
         );
     }
 
