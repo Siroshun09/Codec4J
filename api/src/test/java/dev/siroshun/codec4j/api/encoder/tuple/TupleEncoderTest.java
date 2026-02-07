@@ -7,6 +7,8 @@ import dev.siroshun.codec4j.api.encoder.Encoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.ElementReader;
+import dev.siroshun.codec4j.api.io.EntryIn;
+import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.io.Memory;
 import dev.siroshun.codec4j.testhelper.codec.ErrorCodec;
@@ -285,13 +287,16 @@ class TupleEncoderTest {
 
     private static <I extends In> void assertNestedMap(ElementReader<I> reader, Map<String, Integer> expected) {
         I elementIn = ResultAssertions.assertSuccess(reader.next());
-        Map<String, Integer> map = ResultAssertions.assertSuccess(elementIn.readMap(new HashMap<>(), (m, entryIn) -> {
+        Map<String, Integer> actual = new HashMap<>();
+        EntryReader entryReader = ResultAssertions.assertSuccess(elementIn.readMap());
+        while (entryReader.hasNext()) {
+            EntryIn entryIn = ResultAssertions.assertSuccess(entryReader.next());
             String key = ResultAssertions.assertSuccess(entryIn.keyIn().readAsString());
             int value = ResultAssertions.assertSuccess(entryIn.valueIn().readAsInt());
-            m.put(key, value);
-            return Result.success();
-        }));
-        Assertions.assertEquals(expected, map);
+            actual.put(key, value);
+        }
+        ResultAssertions.assertSuccess(entryReader.finish());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
