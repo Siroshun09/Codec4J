@@ -34,7 +34,12 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
         R identity = this.decodeProcessor().createIdentity();
 
         while (reader.hasNext()) {
-            Result<E, DecodeError> decodeResult = this.decodeProcessor().decodeElement(reader.next().unwrap());
+            Result<? extends In, DecodeError> elementIn = reader.next();
+            if (elementIn.isFailure()) {
+                return elementIn.asFailure();
+            }
+
+            Result<E, DecodeError> decodeResult = this.decodeProcessor().decodeElement(elementIn.unwrap());
 
             if (decodeResult.isFailure()) {
                 if (decodeResult.unwrapError().isIgnorable()) {
@@ -51,7 +56,10 @@ public interface ElementDecoder<E, R> extends Decoder<R> {
             }
         }
 
-        reader.finish();
+        Result<Void, DecodeError> finishResult = reader.finish();
+        if (finishResult.isFailure()) {
+            return finishResult.asFailure();
+        }
 
         return Result.success(this.decodeProcessor().finalizeIdentity(identity));
     }
