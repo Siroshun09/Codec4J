@@ -1,7 +1,6 @@
 package dev.siroshun.codec4j.api.error;
 
 import dev.siroshun.codec4j.api.io.Type;
-import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.List;
@@ -21,9 +20,6 @@ final class DecodeErrors {
     }
 
     record InvalidNumberFormatError(NumberFormatException exception) implements DecodeError.InvalidNumberFormat {
-    }
-
-    record IterationError(Result.Failure<?, ?> cause) implements DecodeError.IterationError {
     }
 
     record NoElementError(OptionalInt index) implements DecodeError.NoElementError {

@@ -12,7 +12,7 @@ import java.util.OptionalInt;
  * An interface to indicate errors when decoding.
  */
 @NotNullByDefault
-public sealed interface DecodeError permits DecodeError.Failure, DecodeError.FatalError, DecodeError.IgnorableError, DecodeError.InvalidChar, DecodeError.InvalidNumber, DecodeError.InvalidNumberFormat, DecodeError.IterationError, DecodeError.MultipleError, DecodeError.NoElementError, DecodeError.NoEntryError, DecodeError.TypeMismatch {
+public sealed interface DecodeError permits DecodeError.Failure, DecodeError.FatalError, DecodeError.IgnorableError, DecodeError.InvalidChar, DecodeError.InvalidNumber, DecodeError.InvalidNumberFormat, DecodeError.MultipleError, DecodeError.NoElementError, DecodeError.NoEntryError, DecodeError.TypeMismatch {
 
     /**
      * Creates a {@link DecodeError} when the type is different from the expected type.
@@ -60,17 +60,6 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
     static InvalidNumberFormat invalidNumberFormat(NumberFormatException e) {
         Objects.requireNonNull(e);
         return new DecodeErrors.InvalidNumberFormatError(e);
-    }
-
-    /**
-     * Creates a {@link DecodeError} when {@link Result.Failure} is returned when iterating elements.
-     *
-     * @param cause the {@link Result.Failure}
-     * @return a new {@link DecodeError}
-     */
-    static IterationError iterationError(Result.Failure<?, ?> cause) {
-        Objects.requireNonNull(cause);
-        return new DecodeErrors.IterationError(cause);
     }
 
     /**
@@ -233,18 +222,6 @@ public sealed interface DecodeError permits DecodeError.Failure, DecodeError.Fat
          * @return a caused {@link NumberFormatException}
          */
         NumberFormatException exception();
-    }
-
-    /**
-     * An interface that indicates a {@link DecodeError} when {@link Result.Failure} is returned when iterating elements.
-     */
-    sealed interface IterationError extends DecodeError permits DecodeErrors.IterationError {
-        /**
-         * Gets a {@link Result.Failure} that is returned when iterating elements.
-         *
-         * @return a {@link Result.Failure} that is returned when iterating elements
-         */
-        Result.Failure<?, ?> cause();
     }
 
     /**
