@@ -2,16 +2,13 @@ package dev.siroshun.codec4j.testhelper.io;
 
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.ElementReader;
-import dev.siroshun.codec4j.api.io.EntryIn;
 import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 public record ErrorIn(DecodeError error) implements In {
 
@@ -75,17 +72,7 @@ public record ErrorIn(DecodeError error) implements In {
     }
 
     @Override
-    public @NotNull <R> Result<R, DecodeError> readList(@NonNull R identity, @NotNull BiFunction<R, ? super In, Result<?, ?>> operator) {
-        return this.error.asFailure();
-    }
-
-    @Override
     public @NotNull Result<EntryReader, DecodeError> readMap() {
-        return this.error.asFailure();
-    }
-
-    @Override
-    public @NotNull <R> Result<R, DecodeError> readMap(@NonNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
         return this.error.asFailure();
     }
 

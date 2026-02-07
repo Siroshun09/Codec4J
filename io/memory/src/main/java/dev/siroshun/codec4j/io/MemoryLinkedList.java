@@ -4,7 +4,6 @@ import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.ElementAppender;
 import dev.siroshun.codec4j.api.io.ElementReader;
-import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.codec4j.api.io.Type;
 import dev.siroshun.jfun.result.Result;
@@ -13,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @NotNullByDefault
@@ -37,10 +35,6 @@ final class MemoryLinkedList implements Memory.Delegated {
 
     public ElementReader<Memory> newReader() {
         return new Reader(this.root);
-    }
-
-    <R> Result<R, DecodeError> readElements(R identity, BiFunction<R, ? super In, Result<?, ?>> operator) {
-        return this.root.iterate(identity, operator);
     }
 
     @Override

@@ -1,12 +1,7 @@
 package dev.siroshun.codec4j.io;
 
-import dev.siroshun.codec4j.api.error.DecodeError;
-import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.function.BiFunction;
 
 @NotNullByDefault
 abstract class LinkedNode<T> {
@@ -50,31 +45,6 @@ abstract class LinkedNode<T> {
         @Nullable
         LinkedNode<T> next() {
             return this.next;
-        }
-
-        <R> Result<R, DecodeError> iterate(R identity, BiFunction<R, ? super T, Result<?, ?>> operator) {
-            Objects.requireNonNull(operator);
-            if (this.value == null) {
-                return Result.success(identity);
-            }
-
-            var result = operator.apply(identity, this.value);
-            if (result instanceof Result.Failure<?, ?> failure) {
-                return DecodeError.iterationError(failure).asFailure();
-            }
-
-            var curr = this.next;
-
-            while (curr != null) {
-                result = operator.apply(identity, curr.value);
-                if (result instanceof Result.Failure<?, ?> failure) {
-                    return DecodeError.iterationError(failure).asFailure();
-                }
-
-                curr = curr.next;
-            }
-
-            return Result.success(identity);
         }
 
         private void increaseSize() {

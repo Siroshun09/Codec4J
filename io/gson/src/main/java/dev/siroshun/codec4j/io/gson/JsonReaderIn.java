@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.io.IOException;
-import java.util.function.BiFunction;
 
 /**
  * An implementation of {@link In} that reads data from a {@link JsonReader}.
@@ -226,60 +225,12 @@ public class JsonReaderIn implements In, AutoCloseable {
     }
 
     @Override
-    public @NotNull <R> Result<R, DecodeError> readList(@NotNull R identity, @NotNull BiFunction<R, ? super In, Result<?, ?>> operator) {
-        try {
-            var token = this.reader.peek();
-            if (token == JsonToken.BEGIN_ARRAY) {
-                this.reader.beginArray();
-
-                while (this.reader.hasNext()) {
-                    var result = operator.apply(identity, this);
-                    if (result.isFailure()) {
-                        return DecodeError.iterationError(result.asFailure()).asFailure();
-                    }
-                }
-
-                this.reader.endArray();
-                return Result.success(identity);
-            } else {
-                return DecodeError.typeMismatch(Type.LIST, convertType(token)).asFailure();
-            }
-        } catch (IOException e) {
-            return DecodeError.fatalError(e).asFailure();
-        }
-    }
-
-    @Override
     public @NotNull Result<EntryReader, DecodeError> readMap() {
         try {
             var token = this.reader.peek();
             if (token == JsonToken.BEGIN_OBJECT) {
                 this.reader.beginObject();
                 return Result.success(new JsonEntryReader());
-            } else {
-                return DecodeError.typeMismatch(Type.MAP, convertType(token)).asFailure();
-            }
-        } catch (IOException e) {
-            return DecodeError.fatalError(e).asFailure();
-        }
-    }
-
-    @Override
-    public @NotNull <R> Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
-        try {
-            var token = this.reader.peek();
-            if (token == JsonToken.BEGIN_OBJECT) {
-                this.reader.beginObject();
-
-                while (this.reader.hasNext()) {
-                    var result = operator.apply(identity, new JsonEntryIn());
-                    if (result.isFailure()) {
-                        return DecodeError.iterationError(result.asFailure()).asFailure();
-                    }
-                }
-
-                this.reader.endObject();
-                return Result.success(identity);
             } else {
                 return DecodeError.typeMismatch(Type.MAP, convertType(token)).asFailure();
             }
@@ -392,18 +343,8 @@ public class JsonReaderIn implements In, AutoCloseable {
         }
 
         @Override
-        public @NotNull <R> Result<R, DecodeError> readList(@NotNull R identity, @NotNull BiFunction<R, ? super In, Result<?, ?>> operator) {
-            return DecodeError.typeMismatch(Type.LIST, Type.STRING).asFailure();
-        }
-
-        @Override
         public @NotNull Result<EntryReader, DecodeError> readMap() {
             return DecodeError.typeMismatch(Type.MAP, Type.STRING).asFailure();
-        }
-
-        @Override
-        public @NotNull <R> Result<R, DecodeError> readMap(@NotNull R identity, @NotNull BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
-            return DecodeError.typeMismatch(Type.STRING, Type.STRING).asFailure();
         }
 
         @Override

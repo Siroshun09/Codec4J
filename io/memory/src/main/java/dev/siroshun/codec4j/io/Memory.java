@@ -2,7 +2,6 @@ package dev.siroshun.codec4j.io;
 
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.io.ElementReader;
-import dev.siroshun.codec4j.api.io.EntryIn;
 import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
@@ -11,7 +10,6 @@ import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -101,27 +99,9 @@ public final class Memory implements In {
     }
 
     @Override
-    public <R> Result<R, DecodeError> readList(R identity, BiFunction<R, ? super In, Result<?, ?>> operator) {
-        if (this.delegate instanceof MemoryLinkedList list) {
-            return list.readElements(identity, operator);
-        } else {
-            return DecodeError.typeMismatch(Type.LIST, this.delegate.type()).asFailure();
-        }
-    }
-
-    @Override
     public @NotNull Result<EntryReader, DecodeError> readMap() {
         if (this.delegate instanceof MemoryMap map) {
             return Result.success(map.newReader());
-        } else {
-            return DecodeError.typeMismatch(Type.MAP, this.delegate.type()).asFailure();
-        }
-    }
-
-    @Override
-    public <R> Result<R, DecodeError> readMap(R identity, BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
-        if (this.delegate instanceof MemoryMap map) {
-            return map.readEntries(identity, operator);
         } else {
             return DecodeError.typeMismatch(Type.MAP, this.delegate.type()).asFailure();
         }

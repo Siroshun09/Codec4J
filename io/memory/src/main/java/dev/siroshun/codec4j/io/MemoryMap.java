@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @NotNullByDefault
@@ -38,10 +37,6 @@ final class MemoryMap implements Memory.Delegated {
 
     EntryReader newReader() {
         return new Reader(this.root);
-    }
-
-    <R> Result<R, DecodeError> readEntries(R identity, BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
-        return this.root.iterate(identity, operator);
     }
 
     @Override

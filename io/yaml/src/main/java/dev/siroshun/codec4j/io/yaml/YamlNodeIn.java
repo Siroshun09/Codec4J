@@ -18,8 +18,6 @@ import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.SequenceNode;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.function.BiFunction;
 
 @NotNullByDefault
 class YamlNodeIn implements In {
@@ -174,48 +172,12 @@ class YamlNodeIn implements In {
     }
 
     @Override
-    public <R> Result<R, DecodeError> readList(R identity, BiFunction<R, ? super In, Result<?, ?>> operator) {
-        if (!(this.node instanceof SequenceNode sequenceNode)) {
-            return DecodeError.typeMismatch(Type.LIST, this.getType()).asFailure();
-        }
-
-        List<Node> nodes = sequenceNode.getValue();
-
-        for (Node node : nodes) {
-            Result<?, ?> result = operator.apply(identity, new YamlNodeIn(node, this.constructor));
-            if (result.isFailure()) {
-                return DecodeError.iterationError(result.asFailure()).asFailure();
-            }
-        }
-
-        return Result.success(identity);
-    }
-
-    @Override
     public @NotNull Result<EntryReader, DecodeError> readMap() {
         if (!(this.node instanceof MappingNode identity)) {
             return DecodeError.typeMismatch(Type.MAP, this.getType()).asFailure();
         }
 
         return Result.success(new YamlEntryReader(identity.getValue().iterator(), this.constructor));
-    }
-
-    @Override
-    public <R> Result<R, DecodeError> readMap(R identity, BiFunction<R, ? super EntryIn, Result<?, ?>> operator) {
-        if (!(this.node instanceof MappingNode mappingNode)) {
-            return DecodeError.typeMismatch(Type.MAP, this.getType()).asFailure();
-        }
-
-        List<NodeTuple> tuples = mappingNode.getValue();
-
-        for (NodeTuple tuple : tuples) {
-            Result<?, ?> result = operator.apply(identity, new YamlTupleIn(tuple, this.constructor));
-            if (result.isFailure()) {
-                return DecodeError.iterationError(result.asFailure()).asFailure();
-            }
-        }
-
-        return Result.success(identity);
     }
 
     @Override

@@ -4,7 +4,10 @@ import dev.siroshun.codec4j.api.codec.Codec;
 import dev.siroshun.codec4j.api.error.DecodeError;
 import dev.siroshun.codec4j.api.error.EncodeError;
 import dev.siroshun.codec4j.api.io.ElementAppender;
+import dev.siroshun.codec4j.api.io.ElementReader;
 import dev.siroshun.codec4j.api.io.EntryAppender;
+import dev.siroshun.codec4j.api.io.EntryIn;
+import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.codec4j.api.io.Out;
 import dev.siroshun.codec4j.api.io.Type;
@@ -126,88 +129,6 @@ class MemoryTest {
     }
 
     @Test
-    void testEmptyList() {
-        Memory memory = ResultAssertions.assertSuccess(Memory.out().createList().map(ElementAppender::finish).unwrapOr(Result.failure()));
-        memory.readList(List.of(), (_, _) -> Assertions.fail("Unexpected call"));
-    }
-
-    @Test
-    void testSingleList() {
-        ElementAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createList());
-        ResultAssertions.assertSuccess(appender.append(out -> out.writeInt(1)));
-        Memory memory = ResultAssertions.assertSuccess(appender.finish());
-
-        List<Integer> result = ResultAssertions.assertSuccess(memory.readList(new ArrayList<>(1), (list, in) -> in.readAsInt().inspect(list::add)));
-        Assertions.assertEquals(List.of(1), result);
-    }
-
-    @Test
-    void testMultipleList() {
-        ElementAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createList());
-        ResultAssertions.assertSuccess(appender.append(out -> out.writeInt(1)));
-        ResultAssertions.assertSuccess(appender.append(out -> out.writeInt(2)));
-        ResultAssertions.assertSuccess(appender.append(out -> out.writeInt(3)));
-        Memory memory = ResultAssertions.assertSuccess(appender.finish());
-
-        List<Integer> result = ResultAssertions.assertSuccess(memory.readList(new ArrayList<>(3), (list, in) -> in.readAsInt().inspect(list::add)));
-        Assertions.assertEquals(List.of(1, 2, 3), result);
-    }
-
-    @Test
-    void testListAppendFailure() {
-        ElementAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createList());
-        var failure = new EncodeError.Failure() {
-        };
-        var appendResult = appender.append(_ -> failure.asFailure());
-        ResultAssertions.assertFailure(appendResult, failure);
-    }
-
-    @Test
-    void testListIterationError() {
-        Memory memory = ResultAssertions.assertSuccess(Memory.out().createList().inspect(appender -> appender.append(o -> o.writeString("a"))).map(ElementAppender::finish).unwrapOr(Result.failure()));
-        Result.Failure<?, ?> failure = Result.failure("list iteration error");
-        Result<?, DecodeError> result = memory.readList(List.of(), (_, _) -> failure.asFailure());
-        ResultAssertions.assertFailure(result, DecodeError.iterationError(failure));
-    }
-
-    @Test
-    void testEmptyMap() {
-        Memory memory = ResultAssertions.assertSuccess(Memory.out().createMap().map(EntryAppender::finish).unwrapOr(Result.failure()));
-        memory.readMap(Map.of(), (_, _) -> Assertions.fail("Unexpected call"));
-    }
-
-    @Test
-    void testSingleMap() {
-        EntryAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createMap());
-        ResultAssertions.assertSuccess(appender.append(keyOut -> keyOut.writeInt(1), valueOut -> valueOut.writeInt(2)));
-        Memory memory = ResultAssertions.assertSuccess(appender.finish());
-
-        Map<Integer, Integer> result = ResultAssertions.assertSuccess(memory.readMap(new LinkedHashMap<>(1), (map, entryIn) -> {
-            int key = ResultAssertions.assertSuccess(entryIn.keyIn().readAsInt());
-            int value = ResultAssertions.assertSuccess(entryIn.valueIn().readAsInt());
-            map.put(key, value);
-            return Result.success();
-        }));
-        Assertions.assertEquals(Map.of(1, 2), result);
-    }
-
-    @Test
-    void testMultipleMap() {
-        EntryAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createMap());
-        ResultAssertions.assertSuccess(appender.append(keyOut -> keyOut.writeInt(1), valueOut -> valueOut.writeInt(2)));
-        ResultAssertions.assertSuccess(appender.append(keyOut -> keyOut.writeInt(3), valueOut -> valueOut.writeInt(4)));
-        ResultAssertions.assertSuccess(appender.append(keyOut -> keyOut.writeInt(5), valueOut -> valueOut.writeInt(6)));
-        Memory memory = ResultAssertions.assertSuccess(appender.finish());
-        Map<Integer, Integer> result = ResultAssertions.assertSuccess(memory.readMap(new LinkedHashMap<>(3), (map, entryIn) -> {
-            int key = ResultAssertions.assertSuccess(entryIn.keyIn().readAsInt());
-            int value = ResultAssertions.assertSuccess(entryIn.valueIn().readAsInt());
-            map.put(key, value);
-            return Result.success();
-        }));
-        Assertions.assertEquals(Map.of(1, 2, 3, 4, 5, 6), result);
-    }
-
-    @Test
     void testMapKeyAppendFailure() {
         EntryAppender<Memory> appender = ResultAssertions.assertSuccess(Memory.out().createMap());
         var failure = new EncodeError.Failure() {
@@ -223,14 +144,6 @@ class MemoryTest {
         };
         var appendResult = appender.append(_ -> Result.success(), _ -> failure.asFailure());
         ResultAssertions.assertFailure(appendResult, failure);
-    }
-
-    @Test
-    void testMapIterationError() {
-        Memory memory = ResultAssertions.assertSuccess(Memory.out().createMap().inspect(appender -> appender.append(k -> k.writeInt(1), v -> v.writeInt(2))).map(EntryAppender::finish).unwrapOr(Result.failure()));
-        Result.Failure<?, ?> failure = Result.failure("map iteration error");
-        Result<?, DecodeError> result = memory.readMap(Map.of(), (_, _) -> failure.asFailure());
-        ResultAssertions.assertFailure(result, DecodeError.iterationError(failure));
     }
 
     @ParameterizedTest
@@ -305,22 +218,70 @@ class MemoryTest {
             case Type.LongValue _ -> in.readAsLong();
             case Type.ShortValue _ -> in.readAsShort();
             case Type.StringValue _ -> in.readAsString();
-            case Type.ListType _ -> in.readList(
-                new ArrayList<>(),
-                (list, elementIn) -> readAs(elementIn.type().unwrapOr(Type.UNKNOWN), elementIn).map(list::add)
-            );
-            case Type.MapType _ -> in.readMap(
-                new LinkedHashMap<>(),
-                (map, entryIn) -> {
-                    var key = readAs(entryIn.keyIn().type().unwrapOr(Type.UNKNOWN), entryIn.keyIn());
-                    var value = readAs(entryIn.valueIn().type().unwrapOr(Type.UNKNOWN), entryIn.valueIn());
-                    if (key.isFailure() || value.isFailure()) {
-                        return Result.failure();
-                    }
-                    map.put(key.unwrap(), value.unwrap());
-                    return Result.success();
+            case Type.ListType _ -> {
+                Result<ElementReader<? extends In>, DecodeError> readerResult = in.readList();
+                if (readerResult.isFailure()) {
+                    yield readerResult.asFailure();
                 }
-            );
+
+                ElementReader<? extends In> reader = readerResult.unwrap();
+                List<Object> list = new ArrayList<>();
+                while (reader.hasNext()) {
+                    Result<? extends In, DecodeError> elementResult = reader.next();
+                    if (elementResult.isFailure()) {
+                        yield elementResult.asFailure();
+                    }
+
+                    In elementIn = elementResult.unwrap();
+                    Result<?, DecodeError> decodeResult = readAs(elementIn.type().unwrapOr(Type.UNKNOWN), elementIn);
+                    if (decodeResult.isFailure()) {
+                        yield decodeResult.asFailure();
+                    }
+                    list.add(decodeResult.unwrap());
+                }
+
+                Result<Void, DecodeError> finishResult = reader.finish();
+                if (finishResult.isFailure()) {
+                    yield finishResult.asFailure();
+                }
+
+                yield Result.success(list);
+            }
+            case Type.MapType _ -> {
+                Result<EntryReader, DecodeError> readerResult = in.readMap();
+                if (readerResult.isFailure()) {
+                    yield readerResult.asFailure();
+                }
+
+                EntryReader reader = readerResult.unwrap();
+                Map<Object, Object> map = new LinkedHashMap<>();
+
+                while (reader.hasNext()) {
+                    Result<EntryIn, DecodeError> entryInResult = reader.next();
+                    if (entryInResult.isFailure()) {
+                        yield entryInResult.asFailure();
+                    }
+
+                    EntryIn entryIn = entryInResult.unwrap();
+                    Result<?, DecodeError> key = readAs(entryIn.keyIn().type().unwrapOr(Type.UNKNOWN), entryIn.keyIn());
+                    Result<?, DecodeError> value = readAs(entryIn.valueIn().type().unwrapOr(Type.UNKNOWN), entryIn.valueIn());
+
+                    if (key.isFailure()) {
+                        yield key.asFailure();
+                    } else if (value.isFailure()) {
+                        yield value.asFailure();
+                    }
+
+                    map.put(key.unwrap(), value.unwrap());
+                }
+
+                Result<Void, DecodeError> finishResult = reader.finish();
+                if (finishResult.isFailure()) {
+                    yield finishResult.asFailure();
+                }
+
+                yield Result.success(map);
+            }
             case Type.Unknown _ -> Result.failure();
         };
     }
