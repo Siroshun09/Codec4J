@@ -61,6 +61,11 @@ record Tuple7Decoder<T, V1, V2, V3, V4, V5, V6, V7>(Function7<V1, V2, V3, V4, V5
             return v7Result.asFailure();
         }
 
+        Result<Void, DecodeError> finishResult = reader.finish();
+        if (finishResult.isFailure()) {
+            return finishResult.asFailure();
+        }
+
         return Result.success(this.constructor.apply(v1Result.unwrap(), v2Result.unwrap(), v3Result.unwrap(), v4Result.unwrap(), v5Result.unwrap(), v6Result.unwrap(), v7Result.unwrap()));
     }
 }

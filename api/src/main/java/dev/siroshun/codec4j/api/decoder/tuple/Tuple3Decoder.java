@@ -37,6 +37,11 @@ record Tuple3Decoder<T, V1, V2, V3>(Function3<V1, V2, V3, T> constructor,
             return v3Result.asFailure();
         }
 
+        Result<Void, DecodeError> finishResult = reader.finish();
+        if (finishResult.isFailure()) {
+            return finishResult.asFailure();
+        }
+
         return Result.success(this.constructor.apply(v1Result.unwrap(), v2Result.unwrap(), v3Result.unwrap()));
     }
 }

@@ -25,6 +25,11 @@ record Tuple1Decoder<T, V1>(Function<V1, T> constructor, TupleValueDecoder<V1> d
             return v1Result.asFailure();
         }
 
+        Result<Void, DecodeError> finishResult = reader.finish();
+        if (finishResult.isFailure()) {
+            return finishResult.asFailure();
+        }
+
         return Result.success(this.constructor.apply(v1Result.unwrap()));
     }
 }

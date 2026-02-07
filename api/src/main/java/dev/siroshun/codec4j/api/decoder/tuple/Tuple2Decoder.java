@@ -32,6 +32,11 @@ record Tuple2Decoder<T, V1, V2>(BiFunction<V1, V2, T> constructor,
             return v2Result.asFailure();
         }
 
+        Result<Void, DecodeError> finishResult = reader.finish();
+        if (finishResult.isFailure()) {
+            return finishResult.asFailure();
+        }
+
         return Result.success(this.constructor.apply(v1Result.unwrap(), v2Result.unwrap()));
     }
 }

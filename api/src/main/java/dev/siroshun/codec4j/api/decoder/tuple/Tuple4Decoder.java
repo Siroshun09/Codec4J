@@ -43,6 +43,11 @@ record Tuple4Decoder<T, V1, V2, V3, V4>(Function4<V1, V2, V3, V4, T> constructor
             return v4Result.asFailure();
         }
 
+        Result<Void, DecodeError> finishResult = reader.finish();
+        if (finishResult.isFailure()) {
+            return finishResult.asFailure();
+        }
+
         return Result.success(this.constructor.apply(v1Result.unwrap(), v2Result.unwrap(), v3Result.unwrap(), v4Result.unwrap()));
     }
 }
