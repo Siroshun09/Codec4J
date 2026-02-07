@@ -2,13 +2,15 @@ package dev.siroshun.codec4j.api.decoder.collection;
 
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
+import dev.siroshun.codec4j.api.io.EntryIn;
+import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.jfun.result.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 /**
- * A {@link Decoder} for decoding entries from an {@link In#readMap(Object, java.util.function.BiFunction)}
+ * A {@link Decoder} for decoding entries from an {@link In#readMap()}
  *
  * @param <K> the type of the key
  * @param <V> the type of the value
@@ -25,7 +27,23 @@ public interface EntryDecoder<K, V, R> extends Decoder<R> {
 
     @Override
     default @NotNull Result<R, DecodeError> decode(@NotNull In in) {
-        return in.readMap(this.decodeProcessor().createIdentity(), (identity, entryIn) -> {
+        Result<EntryReader, DecodeError> readerResult = in.readMap();
+        if (readerResult.isFailure()) {
+            return readerResult.asFailure();
+        }
+
+        EntryReader reader = readerResult.unwrap();
+        R identity = this.decodeProcessor().createIdentity();
+
+        while (reader.hasNext()) {
+            Result<EntryIn, DecodeError> entryResult = reader.next();
+
+            if (entryResult.isFailure()) {
+                return entryResult.asFailure();
+            }
+
+            EntryIn entryIn = entryResult.unwrap();
+
             Result<K, DecodeError> keyResult = this.decodeProcessor().decodeKey(entryIn.keyIn());
             Result<V, DecodeError> valueResult = this.decodeProcessor().decodeValue(entryIn.valueIn());
 
@@ -44,9 +62,14 @@ public interface EntryDecoder<K, V, R> extends Decoder<R> {
             if (acceptResult.isFailure() && !acceptResult.unwrapError().isIgnorable()) {
                 return acceptResult.asFailure();
             }
+        }
 
-            return Result.success();
-        }).map(this.decodeProcessor()::finalizeIdentity);
+        Result<Void, DecodeError> finishResult = reader.finish();
+        if (finishResult.isFailure()) {
+            return finishResult.asFailure();
+        }
+
+        return Result.success(this.decodeProcessor().finalizeIdentity(identity));
     }
 
     /**
@@ -75,9 +98,9 @@ public interface EntryDecoder<K, V, R> extends Decoder<R> {
         @NotNull Result<V, DecodeError> decodeValue(@NotNull In in);
 
         /**
-         * Creates a {@link T} for an identity of {@link In#readMap(Object, java.util.function.BiFunction)}.
+         * Creates an identity object of {@link T}.
          *
-         * @return a {@link T} for an identity of {@link In#readMap(Object, java.util.function.BiFunction)}
+         * @return an identity object of {@link T}
          */
         @NotNull T createIdentity();
 

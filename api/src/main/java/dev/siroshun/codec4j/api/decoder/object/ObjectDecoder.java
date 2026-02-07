@@ -2,6 +2,8 @@ package dev.siroshun.codec4j.api.decoder.object;
 
 import dev.siroshun.codec4j.api.decoder.Decoder;
 import dev.siroshun.codec4j.api.error.DecodeError;
+import dev.siroshun.codec4j.api.io.EntryIn;
+import dev.siroshun.codec4j.api.io.EntryReader;
 import dev.siroshun.codec4j.api.io.In;
 import dev.siroshun.jfun.function.Function10;
 import dev.siroshun.jfun.function.Function3;
@@ -81,17 +83,40 @@ public final class ObjectDecoder<T> implements Decoder<T> {
 
     @Override
     public @NotNull Result<T, DecodeError> decode(@NotNull In in) {
-        return in.readMap(
-            this.objectConstructorSupplier.get(),
-            (constructor, entryIn) -> {
-                Result<String, DecodeError> fieldNameResult = entryIn.keyIn().readAsString();
+        Result<EntryReader, DecodeError> readerResult = in.readMap();
+        if (readerResult.isFailure()) {
+            return readerResult.asFailure();
+        }
 
-                if (fieldNameResult.isFailure()) {
-                    return fieldNameResult.asFailure();
-                }
+        EntryReader reader = readerResult.unwrap();
+        ObjectConstructor<T> constructor = this.objectConstructorSupplier.get();
 
-                return constructor.decodeField(fieldNameResult.unwrap(), entryIn.valueIn());
-            }).flatMap(ObjectConstructor::construct);
+        while (reader.hasNext()) {
+            Result<EntryIn, DecodeError> entryInResult = reader.next();
+            if (entryInResult.isFailure()) {
+                return entryInResult.asFailure();
+            }
+
+            EntryIn entryIn = entryInResult.unwrap();
+
+            Result<String, DecodeError> fieldNameResult = entryIn.keyIn().readAsString();
+
+            if (fieldNameResult.isFailure()) {
+                return fieldNameResult.asFailure();
+            }
+
+            Result<Void, DecodeError> decodeResult = constructor.decodeField(fieldNameResult.unwrap(), entryIn.valueIn());
+            if (decodeResult.isFailure()) {
+                return decodeResult.asFailure();
+            }
+        }
+
+        Result<Void, DecodeError> finishResult = reader.finish();
+        if (finishResult.isFailure()) {
+            return finishResult.asFailure();
+        }
+
+        return constructor.construct();
     }
 
     interface ObjectConstructor<T> {
