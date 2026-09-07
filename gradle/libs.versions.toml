@@ -3,7 +3,7 @@
 annotations = "26.1.0"
 gson = "2.14.0"
 jfun = "1.0.0-beta.3"
-snakeyaml = "2.6"
+snakeyaml = "2.7"
 
 # testing tool
 junit = "6.1.3"
